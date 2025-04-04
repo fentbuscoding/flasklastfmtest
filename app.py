@@ -10,8 +10,8 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 token_store = TokenStore()
 
-API_KEY = '289a3a6a45223b96380a507dd3df80fc'
-API_SECRET = '4d0ebb894f28f9d15d64cb237f75c552'
+API_KEY = 'API_KEY'
+API_SECRET = 'API_KEY'
 
 # Add authentication routes and helper functions
 def get_auth_url():
