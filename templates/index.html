@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Last.fm Track Selector</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* General styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f1f5f8;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            font-family: 'Poppins', sans-serif;
+            color: #4CAF50;
+            font-weight: 600;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        /* Search results styling */
+        .search-container {
+            position: relative;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .search-result {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+
+        .search-result:hover,
+        .search-result.active {
+            background-color: #f5f5f5;
+        }
+
+        .loading {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            display: none;
+        }
+
+        .no-results {
+            padding: 10px;
+            text-align: center;
+            color: #666;
+        }
+
+        .selected-track {
+            background-color: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .selected-track p {
+            margin: 0 0 10px 0;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Last.fm Track Selector</h1>
+
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+
+        {% if auth_url %}
+            <p><a href="{{ auth_url }}" class="button">Login with Last.fm</a></p>
+        {% else %}
+            {% if user_name %}
+                <p>Welcome, {{ user_name }}! <a href="{{ url_for('logout') }}" class="button">Logout</a></p>
+
+                <div class="search-container">
+                    <label for="search">Search for a track:</label>
+                    <input type="text" id="search" placeholder="Type to search..." autocomplete="off">
+                    <div id="searchResults" class="search-results"></div>
+                    <div class="loading"><i class="fas fa-spinner fa-spin"></i></div>
+                </div>
+
+                <div class="selected-track" id="selectedTrack" style="display: none;">
+                    <p>Selected: <span id="selectedText"></span></p>
+                </div>
+
+                {% if recent_tracks %}
+                    <h2>Recent Tracks</h2>
+                    {% for track in recent_tracks %}
+                        <div class="track">{{ track.artist['#text'] }} - {{ track.name }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('search');
+        const searchResults = document.getElementById('searchResults');
+        const selectedTrack = document.getElementById('selectedTrack');
+        const selectedText = document.getElementById('selectedText');
+        const loadingIndicator = document.querySelector('.loading');
+
+        let searchTimeout;
+
+        searchInput.addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const query = searchInput.value.trim();
+                if (query.length < 2) {
+                    searchResults.innerHTML = '';
+                    return;
+                }
+
+                fetchTracks(query);
+            }, 300);
+        });
+
+        async function fetchTracks(query) {
+            try {
+                loadingIndicator.style.display = 'block';
+                const response = await fetch(`/search?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+
+                searchResults.innerHTML = '';
+                if (data.length === 0) {
+                    searchResults.innerHTML = '<div class="no-results">No tracks found</div>';
+                    return;
+                }
+
+                data.forEach(track => {
+                    const div = document.createElement('div');
+                    div.className = 'search-result';
+                    div.textContent = `${track.artist} - ${track.name}`;
+                    div.addEventListener('click', () => selectTrack(track));
+                    searchResults.appendChild(div);
+                });
+            } catch (error) {
+                searchResults.innerHTML = '<div class="no-results">Error fetching tracks</div>';
+                console.error(error);
+            } finally {
+                loadingIndicator.style.display = 'none';
+            }
+        }
+
+        function selectTrack(track) {
+            selectedText.textContent = `${track.artist} - ${track.name}`;
+            selectedTrack.style.display = 'block';
+            searchResults.innerHTML = '';
+            searchInput.value = '';
+        }
+    </script>
+</body>
+</html>
