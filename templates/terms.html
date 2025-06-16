@@ -4,95 +4,527 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Terms of Service - Last.fm Scrobbler</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #d51007;
+            --primary-dark: #b00e06;
+            --secondary-color: #2c3e50;
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --text-color: #2c3e50;
+            --text-light: #6c757d;
+            --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-background: #ffffff;
+            --border-radius: 16px;
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 25px 50px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 800px;
-            margin: 0 auto;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.7;
+            color: var(--text-color);
+            margin: 0;
             padding: 20px;
-            background: #f8f9fa;
+            background: var(--background);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
         }
+
+        /* Animated background particles */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+            animation: float 25s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-15px) rotate(0.5deg); }
+            66% { transform: translateY(-10px) rotate(-0.5deg); }
+        }
+
         .container {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-background);
+            padding: 60px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        h1 { color: #d51007; margin-bottom: 30px; }
-        h2 { color: #2c3e50; margin-top: 30px; margin-bottom: 15px; }
-        .back-link { color: #d51007; text-decoration: none; margin-bottom: 20px; display: inline-block; }
-        .back-link:hover { text-decoration: underline; }
-        .effective-date { color: #6c757d; font-style: italic; margin-bottom: 30px; }
-        ul { margin-left: 20px; }
-        li { margin-bottom: 8px; }
+
+        .container:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-3px);
+        }
+
+        /* Header section */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid rgba(213, 16, 7, 0.1);
+            position: relative;
+        }
+
+        .back-link {
+            position: absolute;
+            top: -20px;
+            left: 0;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: 50px;
+            background: rgba(213, 16, 7, 0.1);
+            transition: var(--transition);
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            background: rgba(213, 16, 7, 0.2);
+            transform: translateX(-5px);
+            text-decoration: none;
+        }
+
+        .back-link i {
+            font-size: 16px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            border-radius: 2px;
+        }
+
+        .effective-date {
+            color: var(--text-light);
+            font-style: italic;
+            font-size: 1.1rem;
+            text-align: center;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background: rgba(108, 117, 125, 0.1);
+            border-radius: 25px;
+            display: inline-block;
+        }
+
+        /* Section styling */
+        .section {
+            margin-bottom: 35px;
+            padding: 25px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.3);
+            border-left: 4px solid var(--accent-color);
+            transition: var(--transition);
+        }
+
+        .section:hover {
+            background: rgba(255, 255, 255, 0.5);
+            transform: translateX(5px);
+        }
+
+        .section:nth-child(even) {
+            border-left-color: var(--success-color);
+        }
+
+        .section:nth-child(3n) {
+            border-left-color: var(--warning-color);
+        }
+
+        /* Section headers */
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+
+        h2::before {
+            content: attr(data-icon);
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: var(--accent-color);
+            font-size: 1.1rem;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 50%;
+        }
+
+        /* Paragraph styling */
+        p {
+            margin-bottom: 15px;
+            font-size: 1rem;
+            line-height: 1.8;
+            color: var(--text-color);
+        }
+
+        /* Enhanced lists */
+        ul {
+            margin: 20px 0;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        li {
+            margin-bottom: 12px;
+            padding: 15px 20px;
+            background: rgba(52, 152, 219, 0.05);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-color);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        li:hover {
+            background: rgba(52, 152, 219, 0.1);
+            transform: translateX(3px);
+        }
+
+        li::before {
+            content: '✓';
+            position: absolute;
+            left: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            background: var(--success-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Special styling for different section types */
+        .important-section {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.1), rgba(192, 57, 43, 0.1));
+            border-left-color: var(--danger-color);
+        }
+
+        .important-section h2::before {
+            color: var(--danger-color);
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        .warning-section {
+            background: linear-gradient(135deg, rgba(243, 156, 18, 0.1), rgba(230, 126, 34, 0.1));
+            border-left-color: var(--warning-color);
+        }
+
+        .warning-section h2::before {
+            color: var(--warning-color);
+            background: rgba(243, 156, 18, 0.1);
+        }
+
+        .info-section {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(41, 128, 185, 0.1));
+            border-left-color: var(--accent-color);
+        }
+
+        /* Links */
+        a:not(.back-link) {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        a:not(.back-link):hover {
+            color: var(--primary-color);
+        }
+
+        a:not(.back-link)::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-color);
+            transition: var(--transition);
+        }
+
+        a:not(.back-link):hover::after {
+            width: 100%;
+        }
+
+        /* Contact section special styling */
+        .contact-section {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(46, 204, 113, 0.1));
+            border: 1px solid rgba(39, 174, 96, 0.2);
+            text-align: center;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .back-link {
+                position: relative;
+                top: 0;
+                margin-bottom: 20px;
+            }
+            
+            .header {
+                text-align: left;
+            }
+            
+            h2 {
+                font-size: 1.2rem;
+            }
+            
+            .section {
+                padding: 20px 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 15px;
+                border-radius: 12px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .section {
+                padding: 15px 12px;
+            }
+            
+            li {
+                padding: 12px 15px;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+            
+            .container {
+                box-shadow: none;
+                border: 1px solid #ccc;
+            }
+            
+            .back-link {
+                display: none;
+            }
+            
+            h1, h2 {
+                color: black;
+            }
+            
+            .section {
+                background: #f8f9fa;
+                break-inside: avoid;
+            }
+        }
+
+        /* Scroll behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Focus styles for accessibility */
+        *:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        /* Loading animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        /* Section numbering */
+        .section {
+            counter-increment: section-counter;
+        }
+
+        .container {
+            counter-reset: section-counter;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <a href="{{ url_for('home') }}" class="back-link">← Back to Scrobbler</a>
-        
-        <h1>Terms of Service</h1>
-        <div class="effective-date">Effective Date: June 16, 2025</div>
+        <div class="header">
+            <a href="{{ url_for('home') }}" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to Scrobbler
+            </a>
+            
+            <h1>Terms of Service</h1>
+            <div class="effective-date">Effective Date: June 16, 2025</div>
+        </div>
 
-        <h2>1. Acceptance of Terms</h2>
-        <p>By accessing and using this Last.fm Scrobbler service ("Service"), you accept and agree to be bound by the terms and provision of this agreement.</p>
+        <div class="section info-section">
+            <h2 data-icon="&#xf00c;">1. Acceptance of Terms</h2>
+            <p>By accessing and using this Last.fm Scrobbler service ("Service"), you accept and agree to be bound by the terms and provision of this agreement.</p>
+        </div>
 
-        <h2>2. Description of Service</h2>
-        <p>This Service provides a web interface to interact with Last.fm's API for music scrobbling and tracking. We act as an intermediary between you and Last.fm's services.</p>
+        <div class="section">
+            <h2 data-icon="&#xf013;">2. Description of Service</h2>
+            <p>This Service provides a web interface to interact with Last.fm's API for music scrobbling and tracking. We act as an intermediary between you and Last.fm's services.</p>
+        </div>
 
-        <h2>3. User Responsibilities</h2>
-        <ul>
-            <li>You must have a valid Last.fm account to use this Service</li>
-            <li>You are responsible for maintaining the confidentiality of your authentication tokens</li>
-            <li>You agree not to use the Service for any unlawful purpose</li>
-            <li>You will not attempt to disrupt or interfere with the Service</li>
-            <li>You will not use automated scripts or bots without explicit permission</li>
-        </ul>
+        <div class="section important-section">
+            <h2 data-icon="&#xf007;">3. User Responsibilities</h2>
+            <ul>
+                <li>You must have a valid Last.fm account to use this Service</li>
+                <li>You are responsible for maintaining the confidentiality of your authentication tokens</li>
+                <li>You agree not to use the Service for any unlawful purpose</li>
+                <li>You will not attempt to disrupt or interfere with the Service</li>
+                <li>You will not use automated scripts or bots without explicit permission</li>
+            </ul>
+        </div>
 
-        <h2>4. Rate Limits and Usage</h2>
-        <p>To ensure fair usage and comply with Last.fm's API limits, we implement rate limiting. Users are limited to 5 requests per minute. Excessive usage may result in temporary suspension.</p>
+        <div class="section warning-section">
+            <h2 data-icon="&#xf3c5;">4. Rate Limits and Usage</h2>
+            <p>To ensure fair usage and comply with Last.fm's API limits, we implement rate limiting. Users are limited to 5 requests per minute. Excessive usage may result in temporary suspension.</p>
+        </div>
 
-        <h2>5. Data and Privacy</h2>
-        <p>We store minimal data necessary for the Service to function, including:</p>
-        <ul>
-            <li>Last.fm authentication tokens (encrypted)</li>
-            <li>Temporary session data</li>
-            <li>Basic usage logs for security purposes</li>
-        </ul>
-        <p>We do not store your Last.fm password or personal music data beyond what's necessary for operation.</p>
+        <div class="section">
+            <h2 data-icon="&#xf023;">5. Data and Privacy</h2>
+            <p>We store minimal data necessary for the Service to function, including:</p>
+            <ul>
+                <li>Last.fm authentication tokens (encrypted)</li>
+                <li>Temporary session data</li>
+                <li>Basic usage logs for security purposes</li>
+            </ul>
+            <p>We do not store your Last.fm password or personal music data beyond what's necessary for operation.</p>
+        </div>
 
-        <h2>6. Third-Party Services</h2>
-        <p>This Service relies on Last.fm's API. We are not responsible for Last.fm's availability, terms, or policies. You must also comply with Last.fm's Terms of Service.</p>
+        <div class="section">
+            <h2 data-icon="&#xf1e0;">6. Third-Party Services</h2>
+            <p>This Service relies on Last.fm's API. We are not responsible for Last.fm's availability, terms, or policies. You must also comply with Last.fm's Terms of Service.</p>
+        </div>
 
-        <h2>7. Intellectual Property</h2>
-        <p>Music metadata and track information remain the property of their respective owners and Last.fm. Our Service interface and code are protected by copyright.</p>
+        <div class="section">
+            <h2 data-icon="&#xf1f9;">7. Intellectual Property</h2>
+            <p>Music metadata and track information remain the property of their respective owners and Last.fm. Our Service interface and code are protected by copyright.</p>
+        </div>
 
-        <h2>8. Disclaimers</h2>
-        <p>This Service is provided "as is" without any guarantees. We make no warranties about:</p>
-        <ul>
-            <li>Service availability or uptime</li>
-            <li>Accuracy of scrobbling data</li>
-            <li>Compatibility with all devices or browsers</li>
-            <li>Loss of data or scrobbles</li>
-        </ul>
+        <div class="section warning-section">
+            <h2 data-icon="&#xf071;">8. Disclaimers</h2>
+            <p>This Service is provided "as is" without any guarantees. We make no warranties about:</p>
+            <ul>
+                <li>Service availability or uptime</li>
+                <li>Accuracy of scrobbling data</li>
+                <li>Compatibility with all devices or browsers</li>
+                <li>Loss of data or scrobbles</li>
+            </ul>
+        </div>
 
-        <h2>9. Limitation of Liability</h2>
-        <p>We shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of the Service.</p>
+        <div class="section important-section">
+            <h2 data-icon="&#xf12a;">9. Limitation of Liability</h2>
+            <p>We shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of the Service.</p>
+        </div>
 
-        <h2>10. Termination</h2>
-        <p>We reserve the right to terminate or suspend your access to the Service at any time for violations of these terms or other reasonable grounds.</p>
+        <div class="section important-section">
+            <h2 data-icon="&#xf00d;">10. Termination</h2>
+            <p>We reserve the right to terminate or suspend your access to the Service at any time for violations of these terms or other reasonable grounds.</p>
+        </div>
 
-        <h2>11. Changes to Terms</h2>
-        <p>We may modify these terms at any time. Continued use of the Service after changes constitutes acceptance of the new terms.</p>
+        <div class="section">
+            <h2 data-icon="&#xf021;">11. Changes to Terms</h2>
+            <p>We may modify these terms at any time. Continued use of the Service after changes constitutes acceptance of the new terms.</p>
+        </div>
 
-        <h2>12. Contact Information</h2>
-        <p>For questions about these Terms of Service, please contact us through the Service interface or by visiting our main page.</p>
+        <div class="section contact-section">
+            <h2 data-icon="&#xf0e0;">12. Contact Information</h2>
+            <p>For questions about these Terms of Service, please contact us through the Service interface or by visiting our main page.</p>
+        </div>
 
-        <h2>13. Governing Law</h2>
-        <p>These terms shall be governed by and construed in accordance with applicable local laws.</p>
+        <div class="section">
+            <h2 data-icon="&#xf0e3;">13. Governing Law</h2>
+            <p>These terms shall be governed by and construed in accordance with applicable local laws.</p>
+        </div>
     </div>
 </body>
 </html>

@@ -6,7 +6,7 @@ Werkzeug==2.3.7
 requests==2.31.0
 
 # Environment variables
-python-dotenv==1.0.0
+python-dotenv
 
 # Encryption for token storage
 cryptography

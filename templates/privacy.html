@@ -4,121 +4,510 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Privacy Policy - Last.fm Scrobbler</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #d51007;
+            --primary-dark: #b00e06;
+            --secondary-color: #2c3e50;
+            --accent-color: #3498db;
+            --text-color: #2c3e50;
+            --text-light: #6c757d;
+            --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-background: #ffffff;
+            --border-radius: 16px;
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 25px 50px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 800px;
-            margin: 0 auto;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.7;
+            color: var(--text-color);
+            margin: 0;
             padding: 20px;
-            background: #f8f9fa;
+            background: var(--background);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
         }
+
+        /* Animated background particles */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 60%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(1deg); }
+        }
+
         .container {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-background);
+            padding: 60px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        h1 { color: #d51007; margin-bottom: 30px; }
-        h2 { color: #2c3e50; margin-top: 30px; margin-bottom: 15px; }
-        .back-link { color: #d51007; text-decoration: none; margin-bottom: 20px; display: inline-block; }
-        .back-link:hover { text-decoration: underline; }
-        .effective-date { color: #6c757d; font-style: italic; margin-bottom: 30px; }
-        ul { margin-left: 20px; }
-        li { margin-bottom: 8px; }
-        .highlight { background: #fff3cd; padding: 10px; border-radius: 4px; margin: 15px 0; }
+
+        .container:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-5px);
+        }
+
+        /* Header section */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid rgba(213, 16, 7, 0.1);
+            position: relative;
+        }
+
+        .back-link {
+            position: absolute;
+            top: -20px;
+            left: 0;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: 50px;
+            background: rgba(213, 16, 7, 0.1);
+            transition: var(--transition);
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            background: rgba(213, 16, 7, 0.2);
+            transform: translateX(-5px);
+            text-decoration: none;
+        }
+
+        .back-link i {
+            font-size: 16px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            border-radius: 2px;
+        }
+
+        .effective-date {
+            color: var(--text-light);
+            font-style: italic;
+            font-size: 1.1rem;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        /* Quick summary highlight */
+        .highlight {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            padding: 25px;
+            border-radius: 12px;
+            margin: 30px 0;
+            border-left: 5px solid #f39c12;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.2);
+        }
+
+        .highlight::before {
+            content: '💡';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            font-size: 1.5rem;
+            background: white;
+            padding: 5px;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .highlight strong {
+            color: #e67e22;
+            font-weight: 600;
+        }
+
+        /* Section headers */
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 40px 0 20px 0;
+            padding: 15px 0;
+            border-bottom: 2px solid rgba(52, 152, 219, 0.2);
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2::before {
+            content: attr(data-icon);
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: var(--accent-color);
+            font-size: 1.2rem;
+        }
+
+        /* Content sections */
+        .section {
+            margin-bottom: 30px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            font-size: 1rem;
+            line-height: 1.8;
+            color: var(--text-color);
+        }
+
+        /* Enhanced lists */
+        ul {
+            margin: 20px 0;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        li {
+            margin-bottom: 12px;
+            padding: 15px 20px;
+            background: rgba(52, 152, 219, 0.05);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-color);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        li:hover {
+            background: rgba(52, 152, 219, 0.1);
+            transform: translateX(5px);
+        }
+
+        li strong {
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        /* Links */
+        a:not(.back-link) {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        a:not(.back-link):hover {
+            color: var(--primary-color);
+        }
+
+        a:not(.back-link)::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-color);
+            transition: var(--transition);
+        }
+
+        a:not(.back-link):hover::after {
+            width: 100%;
+        }
+
+        /* Special sections */
+        .section-icon {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-color), #2980b9);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            color: white;
+            margin-right: 15px;
+            font-size: 1rem;
+        }
+
+        /* Contact section special styling */
+        .contact-section {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(155, 89, 182, 0.1));
+            padding: 30px;
+            border-radius: 12px;
+            margin: 30px 0;
+            border: 1px solid rgba(52, 152, 219, 0.2);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .back-link {
+                position: relative;
+                top: 0;
+                margin-bottom: 20px;
+            }
+            
+            .header {
+                text-align: left;
+            }
+            
+            h2 {
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 15px;
+                border-radius: 12px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .highlight {
+                padding: 20px 15px;
+            }
+            
+            li {
+                padding: 12px 15px;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+            
+            .container {
+                box-shadow: none;
+                border: 1px solid #ccc;
+            }
+            
+            .back-link {
+                display: none;
+            }
+            
+            h1, h2 {
+                color: black;
+            }
+            
+            .highlight {
+                background: #f0f0f0;
+                border-left-color: #666;
+            }
+        }
+
+        /* Scroll behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Focus styles for accessibility */
+        *:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        /* Loading animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            animation: fadeIn 0.6s ease-out;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <a href="{{ url_for('home') }}" class="back-link">← Back to Scrobbler</a>
-        
-        <h1>Privacy Policy</h1>
-        <div class="effective-date">Effective Date: June 16, 2025</div>
+        <div class="header">
+            <a href="{{ url_for('home') }}" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to Scrobbler
+            </a>
+            
+            <h1>Privacy Policy</h1>
+            <div class="effective-date">Effective Date: June 16, 2025</div>
+        </div>
 
         <div class="highlight">
             <strong>Quick Summary:</strong> We collect minimal data needed to provide the scrobbling service. Your Last.fm tokens are encrypted, and we don't store your personal music data.
         </div>
 
-        <h2>1. Information We Collect</h2>
-        <p>We collect the following types of information:</p>
-        <ul>
-            <li><strong>Authentication Data:</strong> Last.fm authentication tokens (encrypted)</li>
-            <li><strong>Usage Data:</strong> Basic logs for security and debugging purposes</li>
-            <li><strong>Session Data:</strong> Temporary session information while you use the service</li>
-            <li><strong>Technical Data:</strong> IP addresses for rate limiting and security</li>
-        </ul>
+        <div class="section">
+            <h2 data-icon="&#xf05a;">1. Information We Collect</h2>
+            <p>We collect the following types of information:</p>
+            <ul>
+                <li><strong>Authentication Data:</strong> Last.fm authentication tokens (encrypted)</li>
+                <li><strong>Usage Data:</strong> Basic logs for security and debugging purposes</li>
+                <li><strong>Session Data:</strong> Temporary session information while you use the service</li>
+                <li><strong>Technical Data:</strong> IP addresses for rate limiting and security</li>
+            </ul>
+        </div>
 
-        <h2>2. How We Use Your Information</h2>
-        <p>We use your information to:</p>
-        <ul>
-            <li>Authenticate you with Last.fm's services</li>
-            <li>Provide scrobbling and music tracking functionality</li>
-            <li>Prevent abuse and ensure fair usage</li>
-            <li>Improve the service and fix bugs</li>
-            <li>Comply with legal requirements</li>
-        </ul>
+        <div class="section">
+            <h2 data-icon="&#xf0c0;">2. How We Use Your Information</h2>
+            <p>We use your information to:</p>
+            <ul>
+                <li>Authenticate you with Last.fm's services</li>
+                <li>Provide scrobbling and music tracking functionality</li>
+                <li>Prevent abuse and ensure fair usage</li>
+                <li>Improve the service and fix bugs</li>
+                <li>Comply with legal requirements</li>
+            </ul>
+        </div>
 
-        <h2>3. Data Storage and Security</h2>
-        <p>We implement several security measures:</p>
-        <ul>
-            <li><strong>Encryption:</strong> All authentication tokens are encrypted using industry-standard encryption</li>
-            <li><strong>File Permissions:</strong> Token files have restrictive permissions (read/write for owner only)</li>
-            <li><strong>Minimal Storage:</strong> We only store data necessary for the service to function</li>
-            <li><strong>Session Security:</strong> Session data is temporary and cleared on logout</li>
-        </ul>
+        <div class="section">
+            <h2 data-icon="&#xf023;">3. Data Storage and Security</h2>
+            <p>We implement several security measures:</p>
+            <ul>
+                <li><strong>Encryption:</strong> All authentication tokens are encrypted using industry-standard encryption</li>
+                <li><strong>File Permissions:</strong> Token files have restrictive permissions (read/write for owner only)</li>
+                <li><strong>Minimal Storage:</strong> We only store data necessary for the service to function</li>
+                <li><strong>Session Security:</strong> Session data is temporary and cleared on logout</li>
+            </ul>
+        </div>
 
-        <h2>4. Data Sharing and Third Parties</h2>
-        <p>We do not sell, trade, or otherwise transfer your information to third parties, except:</p>
-        <ul>
-            <li><strong>Last.fm:</strong> We communicate with Last.fm's API on your behalf</li>
-            <li><strong>Legal Requirements:</strong> If required by law or to protect our rights</li>
-            <li><strong>Service Providers:</strong> Hosting providers that help us operate the service</li>
-        </ul>
+        <div class="section">
+            <h2 data-icon="&#xf1e0;">4. Data Sharing and Third Parties</h2>
+            <p>We do not sell, trade, or otherwise transfer your information to third parties, except:</p>
+            <ul>
+                <li><strong>Last.fm:</strong> We communicate with Last.fm's API on your behalf</li>
+                <li><strong>Legal Requirements:</strong> If required by law or to protect our rights</li>
+                <li><strong>Service Providers:</strong> Hosting providers that help us operate the service</li>
+            </ul>
+        </div>
 
-        <h2>5. Cookies and Tracking</h2>
-        <p>We use minimal tracking:</p>
-        <ul>
-            <li><strong>Session Cookies:</strong> To maintain your login state</li>
-            <li><strong>No Third-Party Tracking:</strong> We don't use analytics or advertising cookies</li>
-            <li><strong>Local Storage:</strong> Browser may cache some data for performance</li>
-        </ul>
+        <div class="section">
+            <h2 data-icon="&#xf1ad;">5. Cookies and Tracking</h2>
+            <p>We use minimal tracking:</p>
+            <ul>
+                <li><strong>Session Cookies:</strong> To maintain your login state</li>
+                <li><strong>No Third-Party Tracking:</strong> We don't use analytics or advertising cookies</li>
+                <li><strong>Local Storage:</strong> Browser may cache some data for performance</li>
+            </ul>
+        </div>
 
-        <h2>6. Your Rights and Choices</h2>
-        <p>You have the right to:</p>
-        <ul>
-            <li><strong>Access:</strong> Request information about data we store about you</li>
-            <li><strong>Deletion:</strong> Request deletion of your data (logout removes most data)</li>
-            <li><strong>Correction:</strong> Request correction of inaccurate information</li>
-            <li><strong>Portability:</strong> Request your data in a readable format</li>
-            <li><strong>Opt-out:</strong> Stop using the service at any time</li>
-        </ul>
+        <div class="section">
+            <h2 data-icon="&#xf007;">6. Your Rights and Choices</h2>
+            <p>You have the right to:</p>
+            <ul>
+                <li><strong>Access:</strong> Request information about data we store about you</li>
+                <li><strong>Deletion:</strong> Request deletion of your data (logout removes most data)</li>
+                <li><strong>Correction:</strong> Request correction of inaccurate information</li>
+                <li><strong>Portability:</strong> Request your data in a readable format</li>
+                <li><strong>Opt-out:</strong> Stop using the service at any time</li>
+            </ul>
+        </div>
 
-        <h2>7. Data Retention</h2>
-        <p>We retain data for the following periods:</p>
-        <ul>
-            <li><strong>Authentication Tokens:</strong> Until you logout or revoke access</li>
-            <li><strong>Session Data:</strong> Until session expires or logout</li>
-            <li><strong>Logs:</strong> Up to 30 days for security purposes</li>
-            <li><strong>Cached Data:</strong> Automatically cleaned up periodically</li>
-        </ul>
+        <div class="section">
+            <h2 data-icon="&#xf017;">7. Data Retention</h2>
+            <p>We retain data for the following periods:</p>
+            <ul>
+                <li><strong>Authentication Tokens:</strong> Until you logout or revoke access</li>
+                <li><strong>Session Data:</strong> Until session expires or logout</li>
+                <li><strong>Logs:</strong> Up to 30 days for security purposes</li>
+                <li><strong>Cached Data:</strong> Automatically cleaned up periodically</li>
+            </ul>
+        </div>
 
-        <h2>8. Children's Privacy</h2>
-        <p>This service is not intended for children under 13. We do not knowingly collect personal information from children under 13. If you believe we have collected information from a child under 13, please contact us immediately.</p>
+        <div class="section">
+            <h2 data-icon="&#xf1ae;">8. Children's Privacy</h2>
+            <p>This service is not intended for children under 13. We do not knowingly collect personal information from children under 13. If you believe we have collected information from a child under 13, please contact us immediately.</p>
+        </div>
 
-        <h2>9. International Data Transfers</h2>
-        <p>Your data may be processed in countries other than your own. We ensure appropriate safeguards are in place to protect your data during such transfers.</p>
+        <div class="section">
+            <h2 data-icon="&#xf0ac;">9. International Data Transfers</h2>
+            <p>Your data may be processed in countries other than your own. We ensure appropriate safeguards are in place to protect your data during such transfers.</p>
+        </div>
 
-        <h2>10. Changes to This Policy</h2>
-        <p>We may update this privacy policy from time to time. We will notify you of any material changes by posting the new policy on this page and updating the effective date.</p>
+        <div class="section">
+            <h2 data-icon="&#xf021;">10. Changes to This Policy</h2>
+            <p>We may update this privacy policy from time to time. We will notify you of any material changes by posting the new policy on this page and updating the effective date.</p>
+        </div>
 
-        <h2>11. Contact Information</h2>
-        <p>If you have any questions about this Privacy Policy or our data practices, please contact us through the main application interface.</p>
+        <div class="section contact-section">
+            <h2 data-icon="&#xf0e0;">11. Contact Information</h2>
+            <p>If you have any questions about this Privacy Policy or our data practices, please contact us through the main application interface.</p>
+        </div>
 
-        <h2>12. Last.fm's Privacy Policy</h2>
-        <p>Since this service connects to Last.fm, you should also review <a href="https://www.last.fm/legal/privacy" target="_blank">Last.fm's Privacy Policy</a> to understand how they handle your data.</p>
+        <div class="section">
+            <h2 data-icon="&#xf08e;">12. Last.fm's Privacy Policy</h2>
+            <p>Since this service connects to Last.fm, you should also review <a href="https://www.last.fm/legal/privacy" target="_blank">Last.fm's Privacy Policy</a> to understand how they handle your data.</p>
+        </div>
     </div>
 </body>
 </html>

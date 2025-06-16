@@ -133,6 +133,50 @@ def make_lastfm_request(params, method='GET'):
         logger.error(f"JSON decode error: {e}")
         raise LastFMError("Invalid response from Last.fm")
 
+def get_user_info(username):
+    """Get user information from Last.fm"""
+    try:
+        params = {
+            'method': 'user.getInfo',
+            'user': username,
+            'api_key': API_KEY
+        }
+        
+        data = make_lastfm_request(params)
+        
+        if 'user' in data:
+            user = data['user']
+            
+            # Get the largest available image
+            image_url = ''
+            if 'image' in user and isinstance(user['image'], list):
+                for img in reversed(user['image']):  # Start from largest
+                    if img.get('#text'):
+                        image_url = img['#text']
+                        break
+            
+            return {
+                'name': user.get('name', username),
+                'realname': user.get('realname', ''),
+                'url': user.get('url', ''),
+                'image': image_url,
+                'playcount': user.get('playcount', '0'),
+                'playlists': user.get('playlists', '0'),
+                'bootstrap': user.get('bootstrap', '0'),
+                'registered': user.get('registered', {}).get('#text', ''),
+                'country': user.get('country', ''),
+                'age': user.get('age', ''),
+                'gender': user.get('gender', ''),
+                'subscriber': user.get('subscriber', '0') == '1'
+            }
+        
+        return None
+    except LastFMError:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting user info: {e}")
+        raise LastFMError("Failed to get user information")
+
 @app.errorhandler(LastFMError)
 def handle_lastfm_error(error):
     return jsonify({'success': False, 'error': str(error)}), 400
@@ -165,6 +209,15 @@ def callback():
             session['user_name'] = data['session']['name']
             session['last_user'] = data['session']['name']
             
+            # Get and store user info
+            try:
+                user_info = get_user_info(data['session']['name'])
+                if user_info:
+                    session['user_info'] = user_info
+            except Exception as e:
+                logger.warning(f"Failed to get user info: {e}")
+                # Continue without user info
+            
             # Save token to persistent storage
             token_store.save_token(data['session']['name'], data['session']['key'])
             flash(f'Successfully authenticated as {data["session"]["name"]}', 'success')
@@ -187,6 +240,88 @@ def logout():
     session.clear()
     return redirect(url_for('home'))
 
+def get_user_recent_tracks(limit=10, page=1):
+    """Get user's recent tracks from Last.fm with pagination"""
+    if 'oauth_token' not in session or 'user_name' not in session:
+        return []
+
+    try:
+        params = {
+            'method': 'user.getRecentTracks',
+            'user': session.get('user_name'),
+            'api_key': API_KEY,
+            'limit': min(limit, 50),  # Limit to prevent abuse
+            'page': page
+        }
+
+        data = make_lastfm_request(params)
+        
+        result = {
+            'tracks': [],
+            'total_pages': 1,
+            'current_page': page,
+            'total_tracks': 0
+        }
+        
+        if 'recenttracks' in data:
+            recent_tracks = data['recenttracks']
+            
+            # Get pagination info
+            if '@attr' in recent_tracks:
+                attr = recent_tracks['@attr']
+                result['total_pages'] = int(attr.get('totalPages', 1))
+                result['current_page'] = int(attr.get('page', 1))
+                result['total_tracks'] = int(attr.get('total', 0))
+            
+            # Get tracks
+            if 'track' in recent_tracks:
+                tracks = recent_tracks['track']
+                # Ensure tracks is always a list
+                if isinstance(tracks, dict):
+                    tracks = [tracks]
+                result['tracks'] = tracks
+        
+        return result
+    except LastFMError:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting recent tracks: {e}")
+        raise LastFMError("Failed to load recent tracks")
+
+@app.route('/recent-tracks')
+@require_auth
+@rate_limit
+def get_recent_tracks_api():
+    """API endpoint to get recent tracks with pagination"""
+    try:
+        page = int(request.args.get('page', 1))
+        limit = int(request.args.get('limit', 20))
+        
+        # Validate inputs
+        if page < 1:
+            page = 1
+        if limit < 1 or limit > 50:
+            limit = 20
+            
+        result = get_user_recent_tracks(limit=limit, page=page)
+        
+        return jsonify({
+            'success': True,
+            'tracks': result['tracks'],
+            'pagination': {
+                'current_page': result['current_page'],
+                'total_pages': result['total_pages'],
+                'total_tracks': result['total_tracks'],
+                'has_next': result['current_page'] < result['total_pages']
+            }
+        })
+        
+    except LastFMError as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error in recent tracks API: {e}")
+        return jsonify({'success': False, 'error': 'Failed to load recent tracks'}), 500
+
 @app.route('/')
 def home():
     """Main home page"""
@@ -199,6 +334,15 @@ def home():
         if stored_token:
             session['oauth_token'] = stored_token
             session['user_name'] = session['last_user']
+            
+            # Get user info if not already stored
+            if 'user_info' not in session:
+                try:
+                    user_info = get_user_info(session['user_name'])
+                    if user_info:
+                        session['user_info'] = user_info
+                except Exception as e:
+                    logger.warning(f"Failed to get user info: {e}")
         else:
             try:
                 auth_url = get_auth_url()
@@ -207,45 +351,42 @@ def home():
                 flash(f'Error: {str(e)}', 'error')
                 return render_template('index.html')
 
-    # Get user's recent tracks
+    # Get user's recent tracks (first page only for initial load)
     try:
-        recent_tracks = get_user_recent_tracks()
+        recent_tracks_data = get_user_recent_tracks(limit=10, page=1)
         return render_template('index.html', 
-                             recent_tracks=recent_tracks,
-                             user_name=session.get('user_name'))
+                             recent_tracks=recent_tracks_data['tracks'],
+                             pagination=recent_tracks_data,
+                             user_name=session.get('user_name'),
+                             user_info=session.get('user_info'))
     except LastFMError as e:
         flash(f'Error loading recent tracks: {str(e)}', 'error')
         return render_template('index.html', 
-                             user_name=session.get('user_name'))
+                             user_name=session.get('user_name'),
+                             user_info=session.get('user_info'))
 
-def get_user_recent_tracks(limit=10):
-    """Get user's recent tracks from Last.fm"""
-    if 'oauth_token' not in session or 'user_name' not in session:
-        return []
 
+@app.route('/user-info')
+@require_auth
+def get_user_info_endpoint():
+    """Get current user information"""
     try:
-        params = {
-            'method': 'user.getRecentTracks',
-            'user': session.get('user_name'),
-            'api_key': API_KEY,
-            'limit': min(limit, 50)  # Limit to prevent abuse
-        }
-
-        data = make_lastfm_request(params)
+        if 'user_info' in session:
+            return jsonify({'success': True, 'user': session['user_info']})
         
-        if 'recenttracks' in data and 'track' in data['recenttracks']:
-            tracks = data['recenttracks']['track']
-            # Ensure tracks is always a list
-            if isinstance(tracks, dict):
-                tracks = [tracks]
-            return tracks
-        
-        return []
-    except LastFMError:
-        raise
+        # Fetch user info if not in session
+        user_info = get_user_info(session.get('user_name'))
+        if user_info:
+            session['user_info'] = user_info
+            return jsonify({'success': True, 'user': user_info})
+        else:
+            return jsonify({'success': False, 'error': 'User not found'}), 404
+            
+    except LastFMError as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
     except Exception as e:
-        logger.error(f"Error getting recent tracks: {e}")
-        raise LastFMError("Failed to load recent tracks")
+        logger.error(f"Error getting user info: {e}")
+        return jsonify({'success': False, 'error': 'Failed to get user info'}), 500
 
 @app.route('/now-playing-info')
 @require_auth
