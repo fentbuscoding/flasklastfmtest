@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service - Last.fm Scrobbler</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        h1 { color: #d51007; margin-bottom: 30px; }
+        h2 { color: #2c3e50; margin-top: 30px; margin-bottom: 15px; }
+        .back-link { color: #d51007; text-decoration: none; margin-bottom: 20px; display: inline-block; }
+        .back-link:hover { text-decoration: underline; }
+        .effective-date { color: #6c757d; font-style: italic; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{{ url_for('home') }}" class="back-link">← Back to Scrobbler</a>
+        
+        <h1>Terms of Service</h1>
+        <div class="effective-date">Effective Date: June 16, 2025</div>
+
+        <h2>1. Acceptance of Terms</h2>
+        <p>By accessing and using this Last.fm Scrobbler service ("Service"), you accept and agree to be bound by the terms and provision of this agreement.</p>
+
+        <h2>2. Description of Service</h2>
+        <p>This Service provides a web interface to interact with Last.fm's API for music scrobbling and tracking. We act as an intermediary between you and Last.fm's services.</p>
+
+        <h2>3. User Responsibilities</h2>
+        <ul>
+            <li>You must have a valid Last.fm account to use this Service</li>
+            <li>You are responsible for maintaining the confidentiality of your authentication tokens</li>
+            <li>You agree not to use the Service for any unlawful purpose</li>
+            <li>You will not attempt to disrupt or interfere with the Service</li>
+            <li>You will not use automated scripts or bots without explicit permission</li>
+        </ul>
+
+        <h2>4. Rate Limits and Usage</h2>
+        <p>To ensure fair usage and comply with Last.fm's API limits, we implement rate limiting. Users are limited to 5 requests per minute. Excessive usage may result in temporary suspension.</p>
+
+        <h2>5. Data and Privacy</h2>
+        <p>We store minimal data necessary for the Service to function, including:</p>
+        <ul>
+            <li>Last.fm authentication tokens (encrypted)</li>
+            <li>Temporary session data</li>
+            <li>Basic usage logs for security purposes</li>
+        </ul>
+        <p>We do not store your Last.fm password or personal music data beyond what's necessary for operation.</p>
+
+        <h2>6. Third-Party Services</h2>
+        <p>This Service relies on Last.fm's API. We are not responsible for Last.fm's availability, terms, or policies. You must also comply with Last.fm's Terms of Service.</p>
+
+        <h2>7. Intellectual Property</h2>
+        <p>Music metadata and track information remain the property of their respective owners and Last.fm. Our Service interface and code are protected by copyright.</p>
+
+        <h2>8. Disclaimers</h2>
+        <p>This Service is provided "as is" without any guarantees. We make no warranties about:</p>
+        <ul>
+            <li>Service availability or uptime</li>
+            <li>Accuracy of scrobbling data</li>
+            <li>Compatibility with all devices or browsers</li>
+            <li>Loss of data or scrobbles</li>
+        </ul>
+
+        <h2>9. Limitation of Liability</h2>
+        <p>We shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of the Service.</p>
+
+        <h2>10. Termination</h2>
+        <p>We reserve the right to terminate or suspend your access to the Service at any time for violations of these terms or other reasonable grounds.</p>
+
+        <h2>11. Changes to Terms</h2>
+        <p>We may modify these terms at any time. Continued use of the Service after changes constitutes acceptance of the new terms.</p>
+
+        <h2>12. Contact Information</h2>
+        <p>For questions about these Terms of Service, please contact us through the Service interface or by visiting our main page.</p>
+
+        <h2>13. Governing Law</h2>
+        <p>These terms shall be governed by and construed in accordance with applicable local laws.</p>
+    </div>
+</body>
+</html>

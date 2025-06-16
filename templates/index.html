@@ -195,6 +195,65 @@
             font-size: 0.9rem;
         }
 
+        /* Now Playing Section */
+        .now-playing-section {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .now-playing-section.show {
+            display: block;
+        }
+
+        .now-playing-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .now-playing-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .now-playing-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .now-playing-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .now-playing-info p {
+            opacity: 0.9;
+            margin-bottom: 3px;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
         /* Search Section */
         .search-section {
             margin-bottom: 40px;
@@ -339,6 +398,48 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .scrobble-time-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #c3e6cb;
+        }
+
+        .scrobble-time-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--success-color);
+        }
+
+        .time-input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #c3e6cb;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .time-presets {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .time-preset {
+            padding: 5px 10px;
+            background: white;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .time-preset:hover {
+            background: #d4edda;
         }
 
         .btn-small {
@@ -413,6 +514,25 @@
             gap: 5px;
         }
 
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
@@ -435,6 +555,11 @@
 
             .track-actions {
                 justify-content: center;
+            }
+
+            .now-playing-content {
+                flex-direction: column;
+                text-align: center;
             }
         }
 
@@ -531,6 +656,24 @@
                         </a>
                     </div>
 
+                    <!-- Now Playing Section -->
+                    <div class="now-playing-section" id="nowPlayingSection">
+                        <div class="now-playing-header">
+                            <i class="fas fa-play pulse"></i>
+                            Now Playing
+                        </div>
+                        <div class="now-playing-content">
+                            <div class="now-playing-image" id="nowPlayingImage">
+                                <i class="fas fa-music"></i>
+                            </div>
+                            <div class="now-playing-info">
+                                <h3 id="nowPlayingTrack">Loading...</h3>
+                                <p id="nowPlayingArtist"></p>
+                                <p id="nowPlayingAlbum"></p>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Search Section -->
                     <div class="search-section">
                         <h2><i class="fas fa-search"></i> Find Music</h2>
@@ -552,12 +695,25 @@
                             <div class="track-actions">
                                 <button class="btn btn-small" onclick="scrobbleTrack()">
                                     <i class="fas fa-music"></i>
-                                    Scrobble Now
+                                    Scrobble
                                 </button>
                                 <button class="btn secondary btn-small" onclick="updateNowPlaying()">
                                     <i class="fas fa-play"></i>
                                     Now Playing
                                 </button>
+                            </div>
+                            <div class="scrobble-time-section">
+                                <div class="scrobble-time-label">
+                                    <i class="fas fa-clock"></i> Scrobble Time
+                                </div>
+                                <input type="text" id="scrobbleTime" class="time-input" placeholder="Leave empty for current time" value="">
+                                <div class="time-presets">
+                                    <span class="time-preset" onclick="setScrobbleTime('now')">Now</span>
+                                    <span class="time-preset" onclick="setScrobbleTime('5')">5m ago</span>
+                                    <span class="time-preset" onclick="setScrobbleTime('15')">15m ago</span>
+                                    <span class="time-preset" onclick="setScrobbleTime('30')">30m ago</span>
+                                    <span class="time-preset" onclick="setScrobbleTime('60')">1h ago</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -601,6 +757,15 @@
                 {% endif %}
             {% endif %}
         </div>
+
+        <div class="footer">
+            <p>
+                By using this service, you agree to our 
+                <a href="{{ url_for('terms') }}" target="_blank">Terms of Service</a> and 
+                <a href="{{ url_for('privacy') }}" target="_blank">Privacy Policy</a>
+            </p>
+            <p>&copy; 2025 Last.fm Scrobbler. Not affiliated with Last.fm.</p>
+        </div>
     </div>
 
     <script>
@@ -608,6 +773,7 @@
         let searchTimeout;
         let selectedTrackData = null;
         let searchCache = new Map();
+        let nowPlayingInterval;
 
         // DOM elements
         const searchInput = document.getElementById('search');
@@ -615,6 +781,8 @@
         const selectedTrack = document.getElementById('selectedTrack');
         const selectedText = document.getElementById('selectedText');
         const loadingIndicator = document.querySelector('.loading');
+        const nowPlayingSection = document.getElementById('nowPlayingSection');
+        const scrobbleTimeInput = document.getElementById('scrobbleTime');
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
@@ -624,6 +792,11 @@
             if (searchInput) {
                 searchInput.focus();
             }
+
+            // Start now playing updates if user is logged in
+            {% if user_name %}
+            startNowPlayingUpdates();
+            {% endif %}
         });
 
         function setupEventListeners() {
@@ -639,6 +812,52 @@
                     hideSearchResults();
                 }
             });
+        }
+
+        function startNowPlayingUpdates() {
+            updateNowPlayingInfo();
+            nowPlayingInterval = setInterval(updateNowPlayingInfo, 30000); // Update every 30 seconds
+        }
+
+        async function updateNowPlayingInfo() {
+            try {
+                const response = await fetch('/now-playing-info');
+                const data = await response.json();
+                
+                if (data.success && data.nowplaying) {
+                    showNowPlaying(data.track);
+                } else {
+                    hideNowPlaying();
+                }
+            } catch (error) {
+                console.error('Error fetching now playing:', error);
+            }
+        }
+
+        function showNowPlaying(track) {
+            document.getElementById('nowPlayingTrack').textContent = track.name;
+            document.getElementById('nowPlayingArtist').textContent = `by ${track.artist}`;
+            document.getElementById('nowPlayingAlbum').textContent = track.album ? `from ${track.album}` : '';
+            
+            const imageElement = document.getElementById('nowPlayingImage');
+            if (track.image) {
+                imageElement.innerHTML = `<img src="${track.image}" alt="Album Art" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">`;
+            } else {
+                imageElement.innerHTML = '<i class="fas fa-music"></i>';
+            }
+            
+            nowPlayingSection.classList.add('show');
+            
+            // Add click handler to select now playing track
+            nowPlayingSection.onclick = () => selectFromRecent(track.artist, track.name, track.album || '');
+        }
+
+        function hideNowPlaying() {
+            nowPlayingSection.classList.remove('show');
+        }
+
+        function setScrobbleTime(value) {
+            scrobbleTimeInput.value = value;
         }
 
         function handleSearch(e) {
@@ -795,6 +1014,7 @@
         function clearSelection() {
             selectedTrackData = null;
             selectedTrack.classList.remove('show');
+            scrobbleTimeInput.value = '';
         }
 
         async function scrobbleTrack() {
@@ -809,6 +1029,11 @@
                 formData.append('track', selectedTrackData.name);
                 if (selectedTrackData.album) {
                     formData.append('album', selectedTrackData.album);
+                }
+                
+                const scrobbleTime = scrobbleTimeInput.value.trim();
+                if (scrobbleTime) {
+                    formData.append('scrobble_time', scrobbleTime);
                 }
                 
                 const response = await fetch('/scrobble', {
@@ -856,6 +1081,8 @@
                 
                 if (data.success) {
                     showNotification('Now playing updated!', 'success');
+                    // Refresh now playing display
+                    updateNowPlayingInfo();
                 } else {
                     showNotification(data.error || 'Failed to update now playing', 'error');
                 }
@@ -912,6 +1139,13 @@
                 notification.remove();
             }, 5000);
         }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (nowPlayingInterval) {
+                clearInterval(nowPlayingInterval);
+            }
+        });
     </script>
 </body>
 </html>
