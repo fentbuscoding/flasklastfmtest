@@ -4,25 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Terms of Service - Last.fm Scrobbler</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #d51007;
-            --primary-dark: #b00e06;
-            --secondary-color: #2c3e50;
-            --accent-color: #3498db;
-            --success-color: #27ae60;
-            --warning-color: #f39c12;
-            --danger-color: #e74c3c;
-            --text-color: #2c3e50;
-            --text-light: #6c757d;
-            --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --card-background: #ffffff;
-            --border-radius: 16px;
-            --shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            --shadow-hover: 0 25px 50px rgba(0, 0, 0, 0.15);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            /* Emo Color Palette - Matching index.html */
+            --primary-color: #e63946;
+            --primary-hover: #d62828;
+            --primary-dark: #a4161a;
+            --secondary-color: #0d1117;
+            --tertiary-color: #161b22;
+            --quaternary-color: #21262d;
+            --accent-color: #f72585;
+            --accent-hover: #d00366;
+            --accent-secondary: #7209b7;
+            --text-color: #f0f6fc;
+            --text-secondary: #8b949e;
+            --text-muted: #6e7681;
+            --text-dim: #484f58;
+            --background: #010409;
+            --background-secondary: #0d1117;
+            --card-background: #161b22;
+            --card-hover: #21262d;
+            --border-color: #30363d;
+            --border-muted: #21262d;
+            --success-color: #238636;
+            --error-color: #da3633;
+            --warning-color: #d29922;
+            
+            /* Emo Shadows & Effects */
+            --shadow-dark: 0 16px 32px rgba(0, 0, 0, 0.8);
+            --shadow-darker: 0 20px 40px rgba(0, 0, 0, 0.9);
+            --shadow-intense: 0 8px 32px rgba(231, 57, 70, 0.4);
+            --shadow-accent: 0 8px 32px rgba(247, 37, 133, 0.3);
+            --glow-primary: 0 0 30px rgba(231, 57, 70, 0.6);
+            --glow-accent: 0 0 30px rgba(247, 37, 133, 0.5);
+            --glow-subtle: 0 0 20px rgba(247, 37, 133, 0.2);
+            
+            /* Design System */
+            --radius: 16px;
+            --radius-small: 12px;
+            --radius-large: 20px;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
@@ -32,18 +56,17 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.7;
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
+            font-family: 'Inter', sans-serif;
             background: var(--background);
+            color: var(--text-color);
             min-height: 100vh;
+            padding: 20px;
             position: relative;
             overflow-x: hidden;
+            line-height: 1.6;
         }
 
-        /* Animated background particles */
+        /* Dramatic animated background - matching index.html */
         body::before {
             content: '';
             position: fixed;
@@ -52,44 +75,87 @@
             width: 100%;
             height: 100%;
             background: 
-                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+                radial-gradient(circle at 20% 30%, rgba(231, 57, 70, 0.08) 0%, transparent 60%),
+                radial-gradient(circle at 80% 70%, rgba(247, 37, 133, 0.06) 0%, transparent 60%),
+                radial-gradient(circle at 40% 80%, rgba(114, 9, 183, 0.04) 0%, transparent 50%);
             pointer-events: none;
             z-index: -1;
-            animation: float 25s ease-in-out infinite;
+            animation: darkFloat 25s ease-in-out infinite;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            33% { transform: translateY(-15px) rotate(0.5deg); }
-            66% { transform: translateY(-10px) rotate(-0.5deg); }
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(45deg, transparent 30%, rgba(231, 57, 70, 0.02) 50%, transparent 70%),
+                linear-gradient(-45deg, transparent 30%, rgba(247, 37, 133, 0.02) 50%, transparent 70%);
+            pointer-events: none;
+            z-index: -1;
+            animation: darkFloat 30s ease-in-out infinite reverse;
+        }
+
+        @keyframes darkFloat {
+            0%, 100% { 
+                transform: translateY(0px) scale(1) rotate(0deg);
+                opacity: 0.8;
+            }
+            33% { 
+                transform: translateY(-30px) scale(1.05) rotate(1deg);
+                opacity: 0.9;
+            }
+            66% { 
+                transform: translateY(-15px) scale(0.95) rotate(-0.5deg);
+                opacity: 0.7;
+            }
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
             background: var(--card-background);
-            padding: 60px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-large);
+            box-shadow: var(--shadow-darker);
             transition: var(--transition);
             position: relative;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(20px);
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                var(--primary-color) 0%, 
+                var(--accent-color) 50%, 
+                var(--accent-secondary) 100%);
+            z-index: 2;
         }
 
         .container:hover {
-            box-shadow: var(--shadow-hover);
-            transform: translateY(-3px);
+            box-shadow: var(--shadow-darker), var(--glow-subtle);
+            transform: translateY(-8px);
+            border-color: var(--primary-color);
+        }
+
+        .content {
+            padding: 60px;
         }
 
         /* Header section */
         .header {
             text-align: center;
-            margin-bottom: 50px;
-            padding-bottom: 30px;
-            border-bottom: 2px solid rgba(213, 16, 7, 0.1);
+            margin-bottom: 60px;
+            padding-bottom: 40px;
+            border-bottom: 2px solid var(--border-color);
             position: relative;
         }
 
@@ -97,79 +163,104 @@
             position: absolute;
             top: -20px;
             left: 0;
-            color: var(--primary-color);
+            color: var(--text-secondary);
             text-decoration: none;
             font-weight: 500;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 12px 20px;
+            gap: 12px;
+            padding: 16px 24px;
             border-radius: 50px;
-            background: rgba(213, 16, 7, 0.1);
+            background: var(--quaternary-color);
+            border: 1px solid var(--border-color);
             transition: var(--transition);
             font-size: 14px;
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .back-link:hover {
-            background: rgba(213, 16, 7, 0.2);
-            transform: translateX(-5px);
+            background: var(--card-hover);
+            color: var(--primary-color);
+            transform: translateX(-8px);
             text-decoration: none;
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-intense);
         }
 
         .back-link i {
             font-size: 16px;
+            transition: var(--transition-fast);
+        }
+
+        .back-link:hover i {
+            transform: translateX(-4px);
         }
 
         h1 {
-            color: var(--primary-color);
-            font-size: 3rem;
+            font-size: 4rem;
             font-weight: 800;
             margin-bottom: 20px;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            background: linear-gradient(135deg, 
+                var(--primary-color) 0%, 
+                var(--accent-color) 50%, 
+                var(--accent-secondary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             text-align: center;
             position: relative;
+            letter-spacing: -0.02em;
         }
 
         h1::after {
             content: '';
             position: absolute;
-            bottom: -10px;
+            bottom: -20px;
             left: 50%;
             transform: translateX(-50%);
             width: 120px;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-            border-radius: 2px;
+            height: 6px;
+            background: linear-gradient(90deg, 
+                var(--primary-color), 
+                var(--accent-color), 
+                var(--accent-secondary));
+            border-radius: 3px;
+            box-shadow: var(--glow-accent);
         }
 
         .effective-date {
-            color: var(--text-light);
+            color: var(--text-muted);
             font-style: italic;
             font-size: 1.1rem;
             text-align: center;
-            margin-top: 10px;
-            padding: 10px 20px;
-            background: rgba(108, 117, 125, 0.1);
-            border-radius: 25px;
+            margin-top: 30px;
+            padding: 12px 24px;
+            background: var(--quaternary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
             display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
         }
 
         /* Section styling */
         .section {
-            margin-bottom: 35px;
-            padding: 25px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.3);
+            margin-bottom: 40px;
+            padding: 32px;
+            border-radius: var(--radius);
+            background: var(--quaternary-color);
+            border: 1px solid var(--border-color);
             border-left: 4px solid var(--accent-color);
             transition: var(--transition);
+            position: relative;
+            backdrop-filter: blur(10px);
         }
 
         .section:hover {
-            background: rgba(255, 255, 255, 0.5);
-            transform: translateX(5px);
+            background: var(--card-hover);
+            transform: translateX(8px);
+            border-color: var(--primary-color);
+            border-left-color: var(--primary-color);
+            box-shadow: var(--shadow-dark);
         }
 
         .section:nth-child(even) {
@@ -180,15 +271,93 @@
             border-left-color: var(--warning-color);
         }
 
+        /* Special section types */
+        .important-section {
+            background: linear-gradient(135deg, 
+                rgba(218, 54, 51, 0.1) 0%, 
+                rgba(164, 22, 26, 0.08) 100%);
+            border-left-color: var(--error-color);
+        }
+
+        .important-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                var(--error-color) 0%, 
+                transparent 100%);
+        }
+
+        .warning-section {
+            background: linear-gradient(135deg, 
+                rgba(210, 153, 34, 0.1) 0%, 
+                rgba(210, 153, 34, 0.05) 100%);
+            border-left-color: var(--warning-color);
+        }
+
+        .warning-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                var(--warning-color) 0%, 
+                transparent 100%);
+        }
+
+        .info-section {
+            background: linear-gradient(135deg, 
+                rgba(247, 37, 133, 0.1) 0%, 
+                rgba(114, 9, 183, 0.05) 100%);
+            border-left-color: var(--accent-color);
+        }
+
+        .info-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                var(--accent-color) 0%, 
+                transparent 100%);
+        }
+
+        .contact-section {
+            background: linear-gradient(135deg, 
+                rgba(35, 134, 54, 0.1) 0%, 
+                rgba(35, 134, 54, 0.05) 100%);
+            border-left-color: var(--success-color);
+            text-align: center;
+        }
+
+        .contact-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                var(--success-color) 0%, 
+                transparent 100%);
+        }
+
         /* Section headers */
         h2 {
-            color: var(--secondary-color);
-            font-size: 1.4rem;
-            font-weight: 600;
-            margin-bottom: 15px;
+            color: var(--text-color);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
             position: relative;
         }
 
@@ -197,88 +366,79 @@
             font-family: 'Font Awesome 6 Free';
             font-weight: 900;
             color: var(--accent-color);
-            font-size: 1.1rem;
-            width: 30px;
-            height: 30px;
+            font-size: 1.3rem;
+            width: 48px;
+            height: 48px;
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(52, 152, 219, 0.1);
-            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        h2:hover::before {
+            background: var(--accent-color);
+            color: var(--background);
+            transform: scale(1.1);
+            box-shadow: var(--glow-accent);
         }
 
         /* Paragraph styling */
         p {
-            margin-bottom: 15px;
-            font-size: 1rem;
+            margin-bottom: 18px;
+            font-size: 1.05rem;
             line-height: 1.8;
-            color: var(--text-color);
+            color: var(--text-secondary);
         }
 
         /* Enhanced lists */
         ul {
-            margin: 20px 0;
+            margin: 25px 0;
             padding-left: 0;
             list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         li {
-            margin-bottom: 12px;
-            padding: 15px 20px;
-            background: rgba(52, 152, 219, 0.05);
-            border-radius: 8px;
+            padding: 18px 24px;
+            background: var(--card-background);
+            border-radius: var(--radius-small);
+            border: 1px solid var(--border-color);
             border-left: 4px solid var(--accent-color);
             transition: var(--transition);
             position: relative;
+            backdrop-filter: blur(10px);
         }
 
         li:hover {
-            background: rgba(52, 152, 219, 0.1);
-            transform: translateX(3px);
+            background: var(--card-hover);
+            transform: translateX(6px);
+            border-color: var(--primary-color);
+            border-left-color: var(--primary-color);
+            box-shadow: var(--shadow-dark);
         }
 
         li::before {
             content: '✓';
             position: absolute;
-            left: -15px;
+            left: -18px;
             top: 50%;
             transform: translateY(-50%);
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             background: var(--success-color);
-            color: white;
+            color: var(--background);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 12px;
             font-weight: bold;
-        }
-
-        /* Special styling for different section types */
-        .important-section {
-            background: linear-gradient(135deg, rgba(231, 76, 60, 0.1), rgba(192, 57, 43, 0.1));
-            border-left-color: var(--danger-color);
-        }
-
-        .important-section h2::before {
-            color: var(--danger-color);
-            background: rgba(231, 76, 60, 0.1);
-        }
-
-        .warning-section {
-            background: linear-gradient(135deg, rgba(243, 156, 18, 0.1), rgba(230, 126, 34, 0.1));
-            border-left-color: var(--warning-color);
-        }
-
-        .warning-section h2::before {
-            color: var(--warning-color);
-            background: rgba(243, 156, 18, 0.1);
-        }
-
-        .info-section {
-            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(41, 128, 185, 0.1));
-            border-left-color: var(--accent-color);
+            box-shadow: var(--shadow-dark);
         }
 
         /* Links */
@@ -288,52 +448,32 @@
             font-weight: 500;
             position: relative;
             transition: var(--transition);
+            border-bottom: 1px solid transparent;
         }
 
         a:not(.back-link):hover {
             color: var(--primary-color);
-        }
-
-        a:not(.back-link)::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--primary-color);
-            transition: var(--transition);
-        }
-
-        a:not(.back-link):hover::after {
-            width: 100%;
-        }
-
-        /* Contact section special styling */
-        .contact-section {
-            background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(46, 204, 113, 0.1));
-            border: 1px solid rgba(39, 174, 96, 0.2);
-            text-align: center;
+            border-bottom-color: var(--primary-color);
         }
 
         /* Responsive design */
         @media (max-width: 768px) {
             body {
-                padding: 10px;
+                padding: 15px;
             }
             
-            .container {
-                padding: 30px 20px;
+            .content {
+                padding: 40px 30px;
             }
             
             h1 {
-                font-size: 2.2rem;
+                font-size: 2.8rem;
             }
             
             .back-link {
                 position: relative;
                 top: 0;
-                margin-bottom: 20px;
+                margin-bottom: 30px;
             }
             
             .header {
@@ -341,32 +481,78 @@
             }
             
             h2 {
-                font-size: 1.2rem;
+                font-size: 1.5rem;
             }
             
             .section {
-                padding: 20px 15px;
+                padding: 24px 20px;
             }
         }
 
         @media (max-width: 480px) {
-            .container {
-                padding: 20px 15px;
-                border-radius: 12px;
+            .content {
+                padding: 30px 20px;
             }
             
             h1 {
-                font-size: 1.8rem;
+                font-size: 2.2rem;
             }
             
             .section {
-                padding: 15px 12px;
+                padding: 20px 16px;
             }
             
             li {
-                padding: 12px 15px;
+                padding: 16px 20px;
+            }
+
+            h2 {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
             }
         }
+
+        /* Scroll behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Focus styles for accessibility */
+        *:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        /* Loading animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .section {
+            animation: fadeInUp 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .section:nth-child(1) { animation-delay: 0.1s; }
+        .section:nth-child(2) { animation-delay: 0.2s; }
+        .section:nth-child(3) { animation-delay: 0.3s; }
+        .section:nth-child(4) { animation-delay: 0.4s; }
+        .section:nth-child(5) { animation-delay: 0.5s; }
+        .section:nth-child(6) { animation-delay: 0.6s; }
+        .section:nth-child(7) { animation-delay: 0.7s; }
+        .section:nth-child(8) { animation-delay: 0.8s; }
 
         /* Print styles */
         @media print {
@@ -393,137 +579,103 @@
                 break-inside: avoid;
             }
         }
-
-        /* Scroll behavior */
-        html {
-            scroll-behavior: smooth;
-        }
-
-        /* Focus styles for accessibility */
-        *:focus {
-            outline: 2px solid var(--accent-color);
-            outline-offset: 2px;
-        }
-
-        /* Loading animation */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .container {
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        /* Section numbering */
-        .section {
-            counter-increment: section-counter;
-        }
-
-        .container {
-            counter-reset: section-counter;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <a href="{{ url_for('home') }}" class="back-link">
-                <i class="fas fa-arrow-left"></i>
-                Back to Scrobbler
-            </a>
-            
-            <h1>Terms of Service</h1>
-            <div class="effective-date">Effective Date: June 16, 2025</div>
-        </div>
+        <div class="content">
+            <div class="header">
+                <a href="{{ url_for('home') }}" class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Scrobbler
+                </a>
+                
+                <h1>Terms of Service</h1>
+                <div class="effective-date">Effective Date: June 16, 2025</div>
+            </div>
 
-        <div class="section info-section">
-            <h2 data-icon="&#xf00c;">1. Acceptance of Terms</h2>
-            <p>By accessing and using this Last.fm Scrobbler service ("Service"), you accept and agree to be bound by the terms and provision of this agreement.</p>
-        </div>
+            <div class="section info-section">
+                <h2 data-icon="&#xf00c;">1. Acceptance of Terms</h2>
+                <p>By accessing and using this Last.fm Scrobbler service ("Service"), you accept and agree to be bound by the terms and provision of this agreement.</p>
+            </div>
 
-        <div class="section">
-            <h2 data-icon="&#xf013;">2. Description of Service</h2>
-            <p>This Service provides a web interface to interact with Last.fm's API for music scrobbling and tracking. We act as an intermediary between you and Last.fm's services.</p>
-        </div>
+            <div class="section">
+                <h2 data-icon="&#xf013;">2. Description of Service</h2>
+                <p>This Service provides a web interface to interact with Last.fm's API for music scrobbling and tracking. We act as an intermediary between you and Last.fm's services.</p>
+            </div>
 
-        <div class="section important-section">
-            <h2 data-icon="&#xf007;">3. User Responsibilities</h2>
-            <ul>
-                <li>You must have a valid Last.fm account to use this Service</li>
-                <li>You are responsible for maintaining the confidentiality of your authentication tokens</li>
-                <li>You agree not to use the Service for any unlawful purpose</li>
-                <li>You will not attempt to disrupt or interfere with the Service</li>
-                <li>You will not use automated scripts or bots without explicit permission</li>
-            </ul>
-        </div>
+            <div class="section important-section">
+                <h2 data-icon="&#xf007;">3. User Responsibilities</h2>
+                <ul>
+                    <li>You must have a valid Last.fm account to use this Service</li>
+                    <li>You are responsible for maintaining the confidentiality of your authentication tokens</li>
+                    <li>You agree not to use the Service for any unlawful purpose</li>
+                    <li>You will not attempt to disrupt or interfere with the Service</li>
+                    <li>You will not use automated scripts or bots without explicit permission</li>
+                </ul>
+            </div>
 
-        <div class="section warning-section">
-            <h2 data-icon="&#xf3c5;">4. Rate Limits and Usage</h2>
-            <p>To ensure fair usage and comply with Last.fm's API limits, we implement rate limiting. Users are limited to 5 requests per minute. Excessive usage may result in temporary suspension.</p>
-        </div>
+            <div class="section warning-section">
+                <h2 data-icon="&#xf3c5;">4. Rate Limits and Usage</h2>
+                <p>To ensure fair usage and comply with Last.fm's API limits, we implement rate limiting. Users are limited to 5 requests per minute. Excessive usage may result in temporary suspension.</p>
+            </div>
 
-        <div class="section">
-            <h2 data-icon="&#xf023;">5. Data and Privacy</h2>
-            <p>We store minimal data necessary for the Service to function, including:</p>
-            <ul>
-                <li>Last.fm authentication tokens (encrypted)</li>
-                <li>Temporary session data</li>
-                <li>Basic usage logs for security purposes</li>
-            </ul>
-            <p>We do not store your Last.fm password or personal music data beyond what's necessary for operation.</p>
-        </div>
+            <div class="section">
+                <h2 data-icon="&#xf023;">5. Data and Privacy</h2>
+                <p>We store minimal data necessary for the Service to function, including:</p>
+                <ul>
+                    <li>Last.fm authentication tokens (encrypted)</li>
+                    <li>Temporary session data</li>
+                    <li>Basic usage logs for security purposes</li>
+                </ul>
+                <p>We do not store your Last.fm password or personal music data beyond what's necessary for operation.</p>
+            </div>
 
-        <div class="section">
-            <h2 data-icon="&#xf1e0;">6. Third-Party Services</h2>
-            <p>This Service relies on Last.fm's API. We are not responsible for Last.fm's availability, terms, or policies. You must also comply with Last.fm's Terms of Service.</p>
-        </div>
+            <div class="section">
+                <h2 data-icon="&#xf1e0;">6. Third-Party Services</h2>
+                <p>This Service relies on Last.fm's API. We are not responsible for Last.fm's availability, terms, or policies. You must also comply with Last.fm's Terms of Service.</p>
+            </div>
 
-        <div class="section">
-            <h2 data-icon="&#xf1f9;">7. Intellectual Property</h2>
-            <p>Music metadata and track information remain the property of their respective owners and Last.fm. Our Service interface and code are protected by copyright.</p>
-        </div>
+            <div class="section">
+                <h2 data-icon="&#xf1f9;">7. Intellectual Property</h2>
+                <p>Music metadata and track information remain the property of their respective owners and Last.fm. Our Service interface and code are protected by copyright.</p>
+            </div>
 
-        <div class="section warning-section">
-            <h2 data-icon="&#xf071;">8. Disclaimers</h2>
-            <p>This Service is provided "as is" without any guarantees. We make no warranties about:</p>
-            <ul>
-                <li>Service availability or uptime</li>
-                <li>Accuracy of scrobbling data</li>
-                <li>Compatibility with all devices or browsers</li>
-                <li>Loss of data or scrobbles</li>
-            </ul>
-        </div>
+            <div class="section warning-section">
+                <h2 data-icon="&#xf071;">8. Disclaimers</h2>
+                <p>This Service is provided "as is" without any guarantees. We make no warranties about:</p>
+                <ul>
+                    <li>Service availability or uptime</li>
+                    <li>Accuracy of scrobbling data</li>
+                    <li>Compatibility with all devices or browsers</li>
+                    <li>Loss of data or scrobbles</li>
+                </ul>
+            </div>
 
-        <div class="section important-section">
-            <h2 data-icon="&#xf12a;">9. Limitation of Liability</h2>
-            <p>We shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of the Service.</p>
-        </div>
+            <div class="section important-section">
+                <h2 data-icon="&#xf12a;">9. Limitation of Liability</h2>
+                <p>We shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of the Service.</p>
+            </div>
 
-        <div class="section important-section">
-            <h2 data-icon="&#xf00d;">10. Termination</h2>
-            <p>We reserve the right to terminate or suspend your access to the Service at any time for violations of these terms or other reasonable grounds.</p>
-        </div>
+            <div class="section important-section">
+                <h2 data-icon="&#xf00d;">10. Termination</h2>
+                <p>We reserve the right to terminate or suspend your access to the Service at any time for violations of these terms or other reasonable grounds.</p>
+            </div>
 
-        <div class="section">
-            <h2 data-icon="&#xf021;">11. Changes to Terms</h2>
-            <p>We may modify these terms at any time. Continued use of the Service after changes constitutes acceptance of the new terms.</p>
-        </div>
+            <div class="section">
+                <h2 data-icon="&#xf021;">11. Changes to Terms</h2>
+                <p>We may modify these terms at any time. Continued use of the Service after changes constitutes acceptance of the new terms.</p>
+            </div>
 
-        <div class="section contact-section">
-            <h2 data-icon="&#xf0e0;">12. Contact Information</h2>
-            <p>For questions about these Terms of Service, please contact us through the Service interface or by visiting our main page.</p>
-        </div>
+            <div class="section contact-section">
+                <h2 data-icon="&#xf0e0;">12. Contact Information</h2>
+                <p>For questions about these Terms of Service, please contact us through the Service interface or by visiting our main page.</p>
+            </div>
 
-        <div class="section">
-            <h2 data-icon="&#xf0e3;">13. Governing Law</h2>
-            <p>These terms shall be governed by and construed in accordance with applicable local laws.</p>
+            <div class="section">
+                <h2 data-icon="&#xf0e3;">13. Governing Law</h2>
+                <p>These terms shall be governed by and construed in accordance with applicable local laws.</p>
+            </div>
         </div>
     </div>
 </body>
