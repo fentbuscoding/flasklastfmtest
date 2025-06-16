@@ -246,11 +246,53 @@ def get_user_recent_tracks(limit=10):
         logger.error(f"Error getting recent tracks: {e}")
         raise LastFMError("Failed to load recent tracks")
 
+@app.route('/now-playing-info')
+@require_auth
+@rate_limit
+def get_now_playing_info():
+    """Get current now playing track"""
+    try:
+        params = {
+            'method': 'user.getRecentTracks',
+            'user': session.get('user_name'),
+            'api_key': API_KEY,
+            'limit': 1
+        }
+
+        data = make_lastfm_request(params)
+        
+        if 'recenttracks' in data and 'track' in data['recenttracks']:
+            tracks = data['recenttracks']['track']
+            if isinstance(tracks, dict):
+                tracks = [tracks]
+            
+            if tracks and tracks[0].get('@attr', {}).get('nowplaying'):
+                track = tracks[0]
+                return jsonify({
+                    'success': True,
+                    'nowplaying': True,
+                    'track': {
+                        'name': track.get('name', ''),
+                        'artist': track.get('artist', {}).get('#text', ''),
+                        'album': track.get('album', {}).get('#text', ''),
+                        'image': track.get('image', [{}])[-1].get('#text', ''),
+                        'url': track.get('url', '')
+                    }
+                })
+        
+        return jsonify({'success': True, 'nowplaying': False})
+        
+    except LastFMError as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error getting now playing: {e}")
+        return jsonify({'success': False, 'error': 'Failed to get now playing'}), 500
+
 @app.route('/scrobble', methods=['POST'])
 @require_auth
 @rate_limit
 def scrobble():
-    """Scrobble a track to Last.fm"""
+    """Scrobble a track to Last.fm with custom timestamp"""
     try:
         # Validate input
         errors = validate_input(request.form, ['artist', 'track'])
@@ -260,6 +302,40 @@ def scrobble():
         artist = request.form['artist'].strip()
         track = request.form['track'].strip()
         album = request.form.get('album', '').strip()
+        
+        # Custom timestamp handling
+        custom_time = request.form.get('scrobble_time', '').strip()
+        timestamp = int(time.time())  # Default to now
+        
+        if custom_time:
+            try:
+                # Parse various time formats
+                if custom_time.lower() == 'now':
+                    timestamp = int(time.time())
+                elif custom_time.isdigit():
+                    # Minutes ago
+                    minutes_ago = int(custom_time)
+                    if minutes_ago > 14 * 24 * 60:  # Last.fm limit: 14 days
+                        return jsonify({'success': False, 'error': 'Cannot scrobble tracks older than 14 days'}), 400
+                    timestamp = int(time.time()) - (minutes_ago * 60)
+                else:
+                    # Try to parse as datetime
+                    try:
+                        from dateutil import parser
+                        dt = parser.parse(custom_time)
+                        timestamp = int(dt.timestamp())
+                        
+                        # Check Last.fm limits
+                        now = int(time.time())
+                        if timestamp > now:
+                            return jsonify({'success': False, 'error': 'Cannot scrobble tracks in the future'}), 400
+                        if now - timestamp > 14 * 24 * 60 * 60:  # 14 days
+                            return jsonify({'success': False, 'error': 'Cannot scrobble tracks older than 14 days'}), 400
+                    except ImportError:
+                        return jsonify({'success': False, 'error': 'Invalid time format'}), 400
+                        
+            except (ValueError, TypeError) as e:
+                return jsonify({'success': False, 'error': 'Invalid time format'}), 400
         
         # Additional validation
         if len(artist) > 200 or len(track) > 200:
@@ -271,7 +347,7 @@ def scrobble():
             'sk': session['oauth_token'],
             'artist': artist,
             'track': track,
-            'timestamp': int(time.time())
+            'timestamp': timestamp
         }
         
         if album:
@@ -281,7 +357,7 @@ def scrobble():
         
         data = make_lastfm_request(params, method='POST')
         
-        logger.info(f"Scrobbled: {artist} - {track} for user {session.get('user_name')}")
+        logger.info(f"Scrobbled: {artist} - {track} at {datetime.fromtimestamp(timestamp)} for user {session.get('user_name')}")
         return jsonify({'success': True, 'message': 'Track scrobbled successfully'})
 
     except LastFMError as e:
@@ -370,6 +446,16 @@ def update_now_playing():
     except Exception as e:
         logger.error(f"Error updating now playing: {e}")
         return jsonify({'success': False, 'error': 'Failed to update now playing'}), 500
+
+@app.route('/terms')
+def terms():
+    """Terms of Service page"""
+    return render_template('terms.html')
+
+@app.route('/privacy')
+def privacy():
+    """Privacy Policy page"""
+    return render_template('privacy.html')
 
 @app.route('/health')
 def health_check():
