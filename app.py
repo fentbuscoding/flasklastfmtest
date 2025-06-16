@@ -100,8 +100,9 @@ def get_api_signature(params):
         # Sort parameters and concatenate them
         string_to_sign = ''.join([f"{k}{params[k]}" for k in sorted(params.keys())])
         string_to_sign += API_SECRET
-        # Calculate md5 hash
-        return hashlib.md5(string_to_sign.encode('utf-8')).hexdigest()
+        # Calculate md5 hash - Last.fm API requires MD5, using usedforsecurity=False
+        # as this is not for security purposes but for API signature matching
+        return hashlib.md5(string_to_sign.encode('utf-8'), usedforsecurity=False).hexdigest()  # nosec B324
     except Exception as e:
         logger.error(f"Error generating API signature: {e}")
         raise LastFMError("Failed to generate API signature")
@@ -467,4 +468,6 @@ if __name__ == '__main__':
     if API_KEY == 'your_api_key_here' or API_SECRET == 'your_api_secret_here':
         logger.warning("Please set LASTFM_API_KEY and LASTFM_API_SECRET environment variables")
     
-    app.run(debug=True, host='127.0.0.1', port=5000)
+    # Use debug mode based on environment variable for security
+    debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+    app.run(debug=debug_mode, host='127.0.0.1', port=5000)

@@ -44,6 +44,7 @@ jobs:
         echo "SECRET_KEY=test-secret-key-for-github-actions" >> $GITHUB_ENV
         echo "LASTFM_API_KEY=test-api-key" >> $GITHUB_ENV
         echo "LASTFM_API_SECRET=test-api-secret" >> $GITHUB_ENV
+        echo "FLASK_DEBUG=false" >> $GITHUB_ENV
     
     - name: Lint with flake8
       run: |
@@ -90,13 +91,22 @@ jobs:
     
     - name: Run bandit security linter
       run: |
-        bandit -r . -f json -o bandit-report.json || true
-        bandit -r . --severity-level medium
+        bandit -r . -f json -o bandit-report.json -c .bandit || true
+        bandit -r . --severity-level medium -c .bandit
     
     - name: Check for known security vulnerabilities
       run: |
         safety check --json || true
         safety check
+    
+    - name: Upload security scan results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: security-scan-results
+        path: |
+          bandit-report.json
+          safety-report.json
 
   build:
     needs: [test, security]
