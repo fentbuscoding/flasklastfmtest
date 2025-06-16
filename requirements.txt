@@ -9,7 +9,7 @@ requests==2.31.0
 python-dotenv==1.0.0
 
 # Encryption for token storage
-cryptography==41.0.8
+cryptography
 
 # Session management (if using Redis)
 redis==5.0.1
