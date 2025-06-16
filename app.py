@@ -8,6 +8,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 from urllib.parse import urlencode
 from functools import wraps
 from token_store import TokenStore
+from dotenv import load_dotenv
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -16,6 +17,7 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
 token_store = TokenStore()
+load_dotenv()
 
 # Configuration
 API_KEY = os.environ.get('LASTFM_API_KEY', 'your_api_key_here')

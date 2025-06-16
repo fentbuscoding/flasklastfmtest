@@ -3,76 +3,230 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Last.fm Track Selector</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Last.fm Scrobbler</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* General styles */
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f1f5f8;
-            color: #333;
+        :root {
+            --primary-color: #d51007;
+            --primary-hover: #b00e06;
+            --secondary-color: #f8f9fa;
+            --text-color: #2c3e50;
+            --text-light: #6c757d;
+            --border-color: #e9ecef;
+            --success-color: #28a745;
+            --error-color: #dc3545;
+            --warning-color: #ffc107;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--text-color);
             min-height: 100vh;
-            flex-direction: column;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
 
         .container {
             width: 100%;
-            max-width: 600px;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            max-width: 800px;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
         }
 
-        h1 {
-            font-family: 'Poppins', sans-serif;
-            color: #4CAF50;
-            font-weight: 600;
-            font-size: 2rem;
-            margin-bottom: 20px;
-        }
-
-        .button {
-            width: 100%;
-            padding: 12px;
-            background-color: #4CAF50;
+        .header {
+            background: var(--primary-color);
             color: white;
+            padding: 30px;
             text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        /* Flash Messages */
+        .flash-messages {
+            margin-bottom: 30px;
+        }
+
+        .flash-message {
+            padding: 15px 20px;
             border-radius: 8px;
-            text-decoration: none;
-            font-size: 1rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             font-weight: 500;
-            margin-top: 20px;
-            transition: background-color 0.3s ease;
         }
 
-        .button:hover {
-            background-color: #45a049;
+        .flash-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
         }
 
-        input[type="text"] {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border: 1px solid #ddd;
+        .flash-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .flash-message.info {
+            background: #cce7ff;
+            color: #004085;
+            border: 1px solid #b3d7ff;
+        }
+
+        /* Auth Section */
+        .auth-section {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .auth-section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+
+        .auth-section p {
+            color: var(--text-light);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
             border-radius: 8px;
-            font-size: 1rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
         }
 
-        /* Search results styling */
+        .btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(213, 16, 7, 0.3);
+        }
+
+        .btn.secondary {
+            background: var(--secondary-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn.secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* User Section */
+        .user-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: var(--secondary-color);
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .user-details h3 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .user-details p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Search Section */
+        .search-section {
+            margin-bottom: 40px;
+        }
+
+        .search-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         .search-container {
             position: relative;
-            width: 100%;
             margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(213, 16, 7, 0.1);
         }
 
         .search-results {
@@ -81,142 +235,682 @@
             left: 0;
             right: 0;
             background: white;
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            max-height: 200px;
+            max-height: 300px;
             overflow-y: auto;
             z-index: 1000;
+            box-shadow: var(--shadow);
+            display: none;
+        }
+
+        .search-results.show {
+            display: block;
         }
 
         .search-result {
-            padding: 10px;
+            padding: 15px 20px;
             cursor: pointer;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--border-color);
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .search-result:hover,
         .search-result.active {
-            background-color: #f5f5f5;
+            background: var(--secondary-color);
+        }
+
+        .search-result:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-info {
+            flex: 1;
+        }
+
+        .search-result-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .search-result-meta {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .search-result-listeners {
+            color: var(--text-light);
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .loading {
             position: absolute;
-            right: 10px;
+            right: 15px;
             top: 50%;
             transform: translateY(-50%);
-            color: #666;
+            color: var(--text-light);
             display: none;
         }
 
         .no-results {
-            padding: 10px;
+            padding: 20px;
             text-align: center;
-            color: #666;
+            color: var(--text-light);
         }
 
+        /* Selected Track */
         .selected-track {
-            background-color: #e8f5e9;
-            padding: 15px;
+            background: #e8f5e9;
+            border: 1px solid #c3e6cb;
             border-radius: 8px;
-            margin-top: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: none;
         }
 
-        .selected-track p {
-            margin: 0 0 10px 0;
-            font-weight: 500;
+        .selected-track.show {
+            display: block;
+        }
+
+        .selected-track-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .selected-track-title {
+            font-weight: 600;
+            color: var(--success-color);
+        }
+
+        .selected-track-info {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        .track-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+
+        /* Recent Tracks */
+        .recent-tracks {
+            margin-top: 40px;
+        }
+
+        .recent-tracks h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .track-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .track-item {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .track-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .track-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .track-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .track-artist {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .track-time {
+            color: var(--text-light);
+            font-size: 0.8rem;
+        }
+
+        .now-playing {
+            background: #fff3cd;
+            border-color: #ffeaa7;
+        }
+
+        .now-playing-indicator {
+            color: var(--warning-color);
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .user-section {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .track-actions {
+                justify-content: center;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Loading States */
+        .btn.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .btn.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            color: white;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>Last.fm Track Selector</h1>
+    <div class="container fade-in">
+        <div class="header">
+            <h1><i class="fab fa-lastfm"></i> Last.fm Scrobbler</h1>
+            <p>Discover, scrobble, and share your music</p>
+        </div>
 
-        {% if error %}
-        <div class="error">{{ error }}</div>
-        {% endif %}
+        <div class="content">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="flash-message {{ category }}">
+                                <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' if category == 'error' else 'info-circle' }}"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
 
-        {% if auth_url %}
-            <p><a href="{{ auth_url }}" class="button">Login with Last.fm</a></p>
-        {% else %}
-            {% if user_name %}
-                <p>Welcome, {{ user_name }}! <a href="{{ url_for('logout') }}" class="button">Logout</a></p>
-
-                <div class="search-container">
-                    <label for="search">Search for a track:</label>
-                    <input type="text" id="search" placeholder="Type to search..." autocomplete="off">
-                    <div id="searchResults" class="search-results"></div>
-                    <div class="loading"><i class="fas fa-spinner fa-spin"></i></div>
+            {% if auth_url %}
+                <!-- Authentication Section -->
+                <div class="auth-section">
+                    <h2>Connect Your Last.fm Account</h2>
+                    <p>Sign in to start scrobbling your favorite tracks and discover new music</p>
+                    <a href="{{ auth_url }}" class="btn">
+                        <i class="fab fa-lastfm"></i>
+                        Login with Last.fm
+                    </a>
                 </div>
+            {% else %}
+                {% if user_name %}
+                    <!-- User Section -->
+                    <div class="user-section">
+                        <div class="user-info">
+                            <div class="user-avatar">{{ user_name[0].upper() }}</div>
+                            <div class="user-details">
+                                <h3>{{ user_name }}</h3>
+                                <p>Connected to Last.fm</p>
+                            </div>
+                        </div>
+                        <a href="{{ url_for('logout') }}" class="btn secondary btn-small">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </a>
+                    </div>
 
-                <div class="selected-track" id="selectedTrack" style="display: none;">
-                    <p>Selected: <span id="selectedText"></span></p>
-                </div>
+                    <!-- Search Section -->
+                    <div class="search-section">
+                        <h2><i class="fas fa-search"></i> Find Music</h2>
+                        <div class="search-container">
+                            <input type="text" id="search" class="search-input" placeholder="Search for artists, tracks, or albums..." autocomplete="off">
+                            <div class="loading"><i class="fas fa-spinner fa-spin"></i></div>
+                            <div id="searchResults" class="search-results"></div>
+                        </div>
 
-                {% if recent_tracks %}
-                    <h2>Recent Tracks</h2>
-                    {% for track in recent_tracks %}
-                        <div class="track">{{ track.artist['#text'] }} - {{ track.name }}</div>
-                    {% endfor %}
+                        <!-- Selected Track -->
+                        <div class="selected-track" id="selectedTrack">
+                            <div class="selected-track-header">
+                                <span class="selected-track-title">Track Selected</span>
+                                <button class="btn secondary btn-small" onclick="clearSelection()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="selected-track-info" id="selectedText"></div>
+                            <div class="track-actions">
+                                <button class="btn btn-small" onclick="scrobbleTrack()">
+                                    <i class="fas fa-music"></i>
+                                    Scrobble Now
+                                </button>
+                                <button class="btn secondary btn-small" onclick="updateNowPlaying()">
+                                    <i class="fas fa-play"></i>
+                                    Now Playing
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Tracks -->
+                    {% if recent_tracks %}
+                        <div class="recent-tracks">
+                            <h2><i class="fas fa-history"></i> Recent Tracks</h2>
+                            <div class="track-list">
+                                {% for track in recent_tracks %}
+                                    <div class="track-item {% if track.get('@attr', {}).get('nowplaying') %}now-playing{% endif %}" 
+                                         onclick="selectFromRecent(&quot;{{ track.artist['#text']|e }}&quot;, &quot;{{ track.name|e }}&quot;, &quot;{{ track.get('album', {}).get('#text', '')|e }}&quot;)">
+                                        <div class="track-item-header">
+                                            <div>
+                                                <div class="track-name">{{ track.name }}</div>
+                                                <div class="track-artist">{{ track.artist['#text'] }}</div>
+                                                {% if track.get('album', {}).get('#text') %}
+                                                    <div class="track-artist">{{ track.album['#text'] }}</div>
+                                                {% endif %}
+                                            </div>
+                                            <div>
+                                                {% if track.get('@attr', {}).get('nowplaying') %}
+                                                    <div class="now-playing-indicator">
+                                                        <i class="fas fa-play"></i>
+                                                        Now Playing
+                                                    </div>
+                                                {% else %}
+                                                    <div class="track-time">
+                                                        {% if track.get('date') %}
+                                                            {{ track.date['#text'] }}
+                                                        {% endif %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
                 {% endif %}
             {% endif %}
-        {% endif %}
+        </div>
     </div>
 
     <script>
+        // Global variables
+        let searchTimeout;
+        let selectedTrackData = null;
+        let searchCache = new Map();
+
+        // DOM elements
         const searchInput = document.getElementById('search');
         const searchResults = document.getElementById('searchResults');
         const selectedTrack = document.getElementById('selectedTrack');
         const selectedText = document.getElementById('selectedText');
         const loadingIndicator = document.querySelector('.loading');
 
-        let searchTimeout;
-
-        searchInput.addEventListener('input', () => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                const query = searchInput.value.trim();
-                if (query.length < 2) {
-                    searchResults.innerHTML = '';
-                    return;
-                }
-
-                fetchTracks(query);
-            }, 300);
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            
+            // Auto-focus search input
+            if (searchInput) {
+                searchInput.focus();
+            }
         });
 
-        async function fetchTracks(query) {
-            try {
-                loadingIndicator.style.display = 'block';
-                const response = await fetch(`/search?q=${encodeURIComponent(query)}`);
-                const data = await response.json();
+        function setupEventListeners() {
+            if (!searchInput) return;
 
-                searchResults.innerHTML = '';
-                if (data.length === 0) {
-                    searchResults.innerHTML = '<div class="no-results">No tracks found</div>';
-                    return;
+            // Search input
+            searchInput.addEventListener('input', handleSearch);
+            searchInput.addEventListener('keydown', handleKeyDown);
+            
+            // Click outside to close results
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.search-container')) {
+                    hideSearchResults();
                 }
+            });
+        }
 
-                data.forEach(track => {
-                    const div = document.createElement('div');
-                    div.className = 'search-result';
-                    div.textContent = `${track.artist} - ${track.name}`;
-                    div.addEventListener('click', () => selectTrack(track));
-                    searchResults.appendChild(div);
-                });
-            } catch (error) {
-                searchResults.innerHTML = '<div class="no-results">Error fetching tracks</div>';
-                console.error(error);
-            } finally {
-                loadingIndicator.style.display = 'none';
+        function handleSearch(e) {
+            clearTimeout(searchTimeout);
+            const query = e.target.value.trim();
+            
+            if (query.length < 2) {
+                hideSearchResults();
+                return;
+            }
+
+            searchTimeout = setTimeout(() => {
+                fetchTracks(query);
+            }, 300);
+        }
+
+        function handleKeyDown(e) {
+            const results = document.querySelectorAll('.search-result');
+            const active = document.querySelector('.search-result.active');
+            
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (active) {
+                    active.classList.remove('active');
+                    const next = active.nextElementSibling;
+                    if (next) {
+                        next.classList.add('active');
+                    } else {
+                        results[0]?.classList.add('active');
+                    }
+                } else {
+                    results[0]?.classList.add('active');
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (active) {
+                    active.classList.remove('active');
+                    const prev = active.previousElementSibling;
+                    if (prev) {
+                        prev.classList.add('active');
+                    } else {
+                        results[results.length - 1]?.classList.add('active');
+                    }
+                } else {
+                    results[results.length - 1]?.classList.add('active');
+                }
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (active) {
+                    active.click();
+                }
+            } else if (e.key === 'Escape') {
+                hideSearchResults();
             }
         }
 
-        function selectTrack(track) {
-            selectedText.textContent = `${track.artist} - ${track.name}`;
-            selectedTrack.style.display = 'block';
+        async function fetchTracks(query) {
+            // Check cache first
+            if (searchCache.has(query)) {
+                displaySearchResults(searchCache.get(query));
+                return;
+            }
+
+            try {
+                showLoading(true);
+                const response = await fetch(`/search?q=${encodeURIComponent(query)}&limit=15`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                // Cache results
+                searchCache.set(query, data);
+                displaySearchResults(data);
+                
+            } catch (error) {
+                console.error('Search error:', error);
+                displaySearchError(error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function displaySearchResults(tracks) {
             searchResults.innerHTML = '';
+            
+            if (tracks.length === 0) {
+                searchResults.innerHTML = '<div class="no-results"><i class="fas fa-search"></i> No tracks found</div>';
+                showSearchResults();
+                return;
+            }
+
+            tracks.forEach((track, index) => {
+                const div = document.createElement('div');
+                div.className = 'search-result';
+                div.innerHTML = `
+                    <div class="search-result-info">
+                        <div class="search-result-title">${escapeHtml(track.name)}</div>
+                        <div class="search-result-meta">by ${escapeHtml(track.artist)}</div>
+                    </div>
+                    <div class="search-result-listeners">
+                        <i class="fas fa-users"></i>
+                        ${formatNumber(track.listeners)}
+                    </div>
+                `;
+                
+                div.addEventListener('click', () => selectTrack(track));
+                searchResults.appendChild(div);
+            });
+            
+            showSearchResults();
+        }
+
+        function displaySearchError(message) {
+            searchResults.innerHTML = `
+                <div class="no-results">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Error: ${escapeHtml(message)}
+                </div>
+            `;
+            showSearchResults();
+        }
+
+        function selectTrack(track) {
+            selectedTrackData = track;
+            selectedText.innerHTML = `
+                <strong>${escapeHtml(track.name)}</strong><br>
+                by ${escapeHtml(track.artist)}
+            `;
+            selectedTrack.classList.add('show');
+            hideSearchResults();
             searchInput.value = '';
+        }
+
+        function selectFromRecent(artist, track, album) {
+            selectedTrackData = { artist, name: track, album };
+            selectedText.innerHTML = `
+                <strong>${escapeHtml(track)}</strong><br>
+                by ${escapeHtml(artist)}
+                ${album ? `<br>from ${escapeHtml(album)}` : ''}
+            `;
+            selectedTrack.classList.add('show');
+            
+            // Scroll to selected track
+            selectedTrack.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function clearSelection() {
+            selectedTrackData = null;
+            selectedTrack.classList.remove('show');
+        }
+
+        async function scrobbleTrack() {
+            if (!selectedTrackData) return;
+            
+            const button = event.target.closest('.btn');
+            button.classList.add('loading');
+            
+            try {
+                const formData = new FormData();
+                formData.append('artist', selectedTrackData.artist);
+                formData.append('track', selectedTrackData.name);
+                if (selectedTrackData.album) {
+                    formData.append('album', selectedTrackData.album);
+                }
+                
+                const response = await fetch('/scrobble', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification('Track scrobbled successfully!', 'success');
+                    clearSelection();
+                } else {
+                    showNotification(data.error || 'Failed to scrobble track', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Scrobble error:', error);
+                showNotification('Failed to scrobble track', 'error');
+            } finally {
+                button.classList.remove('loading');
+            }
+        }
+
+        async function updateNowPlaying() {
+            if (!selectedTrackData) return;
+            
+            const button = event.target.closest('.btn');
+            button.classList.add('loading');
+            
+            try {
+                const formData = new FormData();
+                formData.append('artist', selectedTrackData.artist);
+                formData.append('track', selectedTrackData.name);
+                if (selectedTrackData.album) {
+                    formData.append('album', selectedTrackData.album);
+                }
+                
+                const response = await fetch('/now-playing', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification('Now playing updated!', 'success');
+                } else {
+                    showNotification(data.error || 'Failed to update now playing', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Now playing error:', error);
+                showNotification('Failed to update now playing', 'error');
+            } finally {
+                button.classList.remove('loading');
+            }
+        }
+
+        // Utility functions
+        function showSearchResults() {
+            searchResults.classList.add('show');
+        }
+
+        function hideSearchResults() {
+            searchResults.classList.remove('show');
+        }
+
+        function showLoading(show) {
+            loadingIndicator.style.display = show ? 'block' : 'none';
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        function formatNumber(num) {
+            return parseInt(num).toLocaleString();
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `flash-message ${type} fade-in`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i>
+                ${message}
+            `;
+            
+            const flashContainer = document.querySelector('.flash-messages') || 
+                                 document.querySelector('.content');
+            flashContainer.insertBefore(notification, flashContainer.firstChild);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
         }
     </script>
 </body>
