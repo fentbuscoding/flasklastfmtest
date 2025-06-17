@@ -83,21 +83,6 @@
             animation: darkFloat 25s ease-in-out infinite;
         }
 
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                linear-gradient(45deg, transparent 30%, rgba(231, 57, 70, 0.02) 50%, transparent 70%),
-                linear-gradient(-45deg, transparent 30%, rgba(247, 37, 133, 0.02) 50%, transparent 70%);
-            pointer-events: none;
-            z-index: -1;
-            animation: darkFloat 30s ease-in-out infinite reverse;
-        }
-
         @keyframes darkFloat {
             0%, 100% { 
                 transform: translate(0, 0) rotate(0deg);
@@ -233,13 +218,13 @@
         }
 
         @keyframes emoSlideIn {
-            from { 
-                transform: translateX(-30px) rotate(-1deg); 
-                opacity: 0; 
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
             }
-            to { 
-                transform: translateX(0) rotate(0deg); 
-                opacity: 1; 
+            to {
+                transform: translateX(0);
+                opacity: 1;
             }
         }
 
@@ -478,119 +463,105 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: linear-gradient(90deg, var(--primary-color), var(--accent-color), var(--accent-secondary));
-            opacity: 0.9;
+            background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
+            animation: emoPulse 2s ease-in-out infinite;
         }
 
         .now-playing-section::after {
             content: '';
             position: absolute;
-            top: 0;
+            bottom: 0;
             left: 0;
             right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 80% 20%, rgba(247, 37, 133, 0.08) 0%, transparent 50%);
-            pointer-events: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+            opacity: 0.5;
         }
 
         .now-playing-section.show {
             display: block;
-            animation: emoFadeIn 0.5s ease-out;
+            animation: emoFadeIn 0.6s ease-out;
         }
 
         @keyframes emoFadeIn {
-            from { 
-                opacity: 0; 
-                transform: translateY(20px) scale(0.98); 
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
             }
-            to { 
-                opacity: 1; 
-                transform: translateY(0) scale(1); 
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
 
         .now-playing-header {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            font-weight: 700;
-            font-size: 1rem;
+            gap: 12px;
+            margin-bottom: 16px;
             color: var(--accent-color);
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            position: relative;
-            z-index: 1;
+            letter-spacing: 0.5px;
         }
 
         .now-playing-content {
             display: flex;
             align-items: center;
             gap: 20px;
-            position: relative;
-            z-index: 1;
         }
 
         .now-playing-image {
-            width: 100px;
-            height: 100px;
+            width: 64px;
+            height: 64px;
             border-radius: var(--radius-small);
-            background: var(--tertiary-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            color: var(--text-secondary);
-            border: 1px solid var(--border-color);
-            overflow: hidden;
+            object-fit: cover;
+            background: var(--quaternary-color);
             flex-shrink: 0;
-            box-shadow: var(--shadow-dark);
         }
 
         .now-playing-info h3 {
-            font-size: 1.4rem;
-            margin-bottom: 6px;
-            font-weight: 700;
+            font-size: 1.3rem;
             color: var(--text-color);
+            margin-bottom: 4px;
+            font-weight: 600;
         }
 
         .now-playing-info p {
             color: var(--text-secondary);
-            margin-bottom: 4px;
             font-size: 1rem;
         }
 
         .pulse {
-            animation: emoPulse 2s infinite;
+            animation: emoPulse 2s ease-in-out infinite;
         }
 
         @keyframes emoPulse {
-            0%, 100% { 
-                opacity: 1; 
+            0%, 100% {
+                opacity: 1;
                 transform: scale(1);
             }
-            50% { 
-                opacity: 0.6; 
-                transform: scale(1.05);
+            50% {
+                opacity: 0.8;
+                transform: scale(1.02);
             }
         }
 
         /* Enhanced Search Section */
         .search-section {
-            margin-bottom: 32px;
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            position: relative;
         }
 
         .search-section h2 {
             font-size: 1.8rem;
             margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 700;
             color: var(--text-color);
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            font-weight: 700;
         }
 
         .search-container {
@@ -600,15 +571,14 @@
 
         .search-input {
             width: 100%;
-            padding: 20px 24px;
+            padding: 16px 20px;
+            background: var(--quaternary-color);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-small);
-            font-size: 1.1rem;
-            transition: var(--transition);
-            background: var(--card-background);
             color: var(--text-color);
-            font-family: inherit;
-            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+            font-size: 1rem;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
         }
 
         .search-input::placeholder {
@@ -619,10 +589,8 @@
         .search-input:focus {
             outline: none;
             border-color: var(--accent-color);
-            box-shadow: 
-                inset 0 2px 10px rgba(0, 0, 0, 0.3),
-                0 0 0 3px rgba(247, 37, 133, 0.2),
-                var(--glow-subtle);
+            box-shadow: 0 0 0 2px rgba(247, 37, 133, 0.2);
+            background: var(--card-background);
         }
 
         .search-results {
@@ -636,10 +604,8 @@
             max-height: 400px;
             overflow-y: auto;
             z-index: 1000;
-            box-shadow: var(--shadow-dark);
             display: none;
-            margin-top: 8px;
-            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-dark);
         }
 
         .search-results.show {
@@ -650,12 +616,10 @@
         .search-result {
             padding: 16px 20px;
             cursor: pointer;
-            border-bottom: 1px solid var(--border-muted);
             transition: var(--transition);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            border-bottom: 1px solid var(--border-muted);
             position: relative;
+            overflow: hidden;
         }
 
         .search-result::before {
@@ -663,10 +627,10 @@
             position: absolute;
             left: 0;
             top: 0;
+            bottom: 0;
             width: 0;
-            height: 100%;
-            background: var(--accent-color);
-            transition: var(--transition-fast);
+            background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
+            transition: var(--transition);
         }
 
         .search-result:hover,
@@ -686,49 +650,46 @@
 
         .search-result-title {
             font-weight: 600;
+            color: var(--text-color);
             margin-bottom: 4px;
-            font-size: 1rem;
         }
 
         .search-result-meta {
             color: var(--text-secondary);
             font-size: 0.9rem;
-            font-family: 'JetBrains Mono', monospace;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .search-result-listeners {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
             font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
         }
 
         .loading {
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--accent-color);
-            display: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: var(--text-secondary);
         }
 
         .no-results {
-            padding: 32px;
+            padding: 20px;
             text-align: center;
             color: var(--text-muted);
-            font-size: 1rem;
             font-style: italic;
         }
 
         /* Dramatic Selected Track */
         .selected-track {
             background: var(--card-background);
-            border: 2px solid var(--success-color);
+            border: 1px solid var(--border-color);
             border-radius: var(--radius);
             padding: 24px;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             display: none;
             position: relative;
             overflow: hidden;
@@ -740,89 +701,72 @@
             top: 0;
             left: 0;
             right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 30% 30%, rgba(35, 134, 54, 0.1) 0%, transparent 60%);
-            pointer-events: none;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
         }
 
         .selected-track.show {
             display: block;
-            animation: emoSlideIn 0.4s ease-out;
-            box-shadow: var(--glow-subtle);
+            animation: emoFadeIn 0.5s ease-out;
         }
 
         .selected-track-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            font-size: 1.1rem;
+            color: var(--accent-color);
             margin-bottom: 16px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .selected-track-title {
-            font-weight: 700;
-            color: var(--success-color);
-            font-size: 1rem;
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
+        .selected-track-title {
+            font-size: 1.5rem;
+            color: var(--text-color);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
         .selected-track-info {
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-            line-height: 1.6;
-            position: relative;
-            z-index: 1;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            font-size: 1rem;
         }
 
         .track-actions {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
         }
 
         .scrobble-time-section {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-            position: relative;
-            z-index: 1;
+            background: var(--quaternary-color);
+            border-radius: var(--radius-small);
+            padding: 20px;
+            margin-bottom: 20px;
         }
 
         .scrobble-time-label {
-            font-weight: 700;
+            color: var(--text-color);
             margin-bottom: 12px;
-            color: var(--success-color);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-weight: 600;
         }
 
         .time-input {
             width: 100%;
             padding: 12px 16px;
+            background: var(--card-background);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-small);
-            font-size: 1rem;
-            margin-bottom: 12px;
-            background: var(--tertiary-color);
             color: var(--text-color);
-            transition: var(--transition);
             font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 12px;
+            transition: var(--transition);
         }
 
         .time-input:focus {
             outline: none;
             border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px rgba(247, 37, 133, 0.2);
+            box-shadow: 0 0 0 2px rgba(247, 37, 133, 0.2);
         }
 
         .time-presets {
@@ -832,84 +776,82 @@
         }
 
         .time-preset {
-            padding: 8px 16px;
-            background: var(--tertiary-color);
+            padding: 8px 12px;
+            background: var(--card-background);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-small);
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: var(--transition);
             color: var(--text-secondary);
-            font-family: 'JetBrains Mono', monospace;
-            font-weight: 500;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: var(--transition);
         }
 
         .time-preset:hover {
-            background: var(--accent-color);
-            color: white;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(247, 37, 133, 0.3);
+            background: var(--card-hover);
+            border-color: var(--accent-color);
+            color: var(--text-color);
         }
 
         /* Moody Recent Tracks */
         .recent-tracks {
-            margin-top: 32px;
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
         }
 
         .recent-tracks h2 {
             font-size: 1.8rem;
             margin-bottom: 20px;
+            color: var(--text-color);
+            font-weight: 700;
             display: flex;
             align-items: center;
             gap: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
         /* Enhanced Pagination Stats */
         .pagination-stats {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 24px;
             margin-bottom: 20px;
             flex-wrap: wrap;
         }
 
         .stat-item {
-            background: var(--card-background);
-            padding: 12px 16px;
+            text-align: center;
+            padding: 16px;
+            background: var(--quaternary-color);
             border-radius: var(--radius-small);
             border: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
             transition: var(--transition);
-            font-family: 'JetBrains Mono', monospace;
+            min-width: 120px;
         }
 
         .stat-item:hover {
             background: var(--card-hover);
-            transform: translateY(-1px);
+            transform: translateY(-2px);
             box-shadow: var(--shadow-dark);
         }
 
         .stat-value {
-            font-weight: 700;
+            font-size: 1.8rem;
+            font-weight: 800;
             color: var(--accent-color);
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 4px;
         }
 
         .track-list {
-            display: grid;
-            gap: 12px;
+            max-height: 600px;
+            overflow-y: auto;
         }
 
         .track-item {
-            background: var(--card-background);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-small);
-            padding: 20px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-muted);
             transition: var(--transition);
             cursor: pointer;
             position: relative;
@@ -919,97 +861,85 @@
         .track-item::before {
             content: '';
             position: absolute;
-            left: 0;
+            left: -100%;
             top: 0;
-            width: 0;
-            height: 100%;
-            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, var(--accent-color), var(--primary-color));
             transition: var(--transition);
         }
 
         .track-item:hover {
-            background: var(--card-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-dark);
+            background: var(--quaternary-color);
+            border-radius: var(--radius-small);
+            padding: 16px 20px;
+            margin: 0 -20px;
         }
 
         .track-item:hover::before {
-            width: 4px;
+            left: 0;
         }
 
         .track-item-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            position: relative;
-            z-index: 1;
+            gap: 16px;
         }
 
         .track-name {
-            font-weight: 700;
-            margin-bottom: 6px;
-            font-size: 1.1rem;
+            font-weight: 600;
             color: var(--text-color);
+            margin-bottom: 4px;
+            font-size: 1.1rem;
         }
 
         .track-artist {
             color: var(--text-secondary);
+            margin-bottom: 8px;
             font-size: 0.95rem;
-            margin-bottom: 4px;
-            font-family: 'JetBrains Mono', monospace;
         }
 
         .track-time {
             color: var(--text-muted);
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             font-family: 'JetBrains Mono', monospace;
+            white-space: nowrap;
         }
 
         .now-playing {
-            background: linear-gradient(135deg, 
-                rgba(210, 153, 34, 0.2), 
-                rgba(230, 126, 34, 0.15)
-            );
-            border-color: var(--warning-color);
-            box-shadow: 0 4px 20px rgba(210, 153, 34, 0.2);
+            color: var(--accent-color) !important;
+            font-weight: 700;
         }
 
         .now-playing-indicator {
-            color: var(--warning-color);
-            font-size: 0.8rem;
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            gap: 6px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            gap: 8px;
+            color: var(--accent-color);
+            animation: emoPulse 2s ease-in-out infinite;
         }
 
         /* Dramatic Load More Button */
         .pagination-container {
             text-align: center;
-            margin-top: 24px;
-            padding: 20px;
+            margin-top: 30px;
         }
 
         .load-more-btn {
-            background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
-            color: white;
-            border: none;
+            background: linear-gradient(135deg, var(--secondary-color), var(--tertiary-color));
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
             padding: 16px 32px;
             border-radius: var(--radius-small);
-            font-size: 1rem;
-            font-weight: 700;
             cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
             transition: var(--transition);
-            box-shadow: var(--shadow-accent);
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
             position: relative;
             overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .load-more-btn::before {
@@ -1019,7 +949,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(247, 37, 133, 0.2), transparent);
             transition: var(--transition);
         }
 
@@ -1028,54 +958,49 @@
         }
 
         .load-more-btn:hover {
-            background: linear-gradient(135deg, var(--accent-hover), var(--accent-color));
-            transform: translateY(-3px);
-            box-shadow: var(--glow-accent);
+            background: linear-gradient(135deg, var(--tertiary-color), var(--quaternary-color));
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-dark);
         }
 
         .load-more-btn:disabled {
-            opacity: 0.6;
+            opacity: 0.5;
             cursor: not-allowed;
             transform: none;
         }
 
         .load-more-btn.loading {
-            color: transparent;
+            pointer-events: none;
         }
 
         .load-more-btn.loading::after {
             content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 20px;
-            height: 20px;
-            border: 2px solid transparent;
-            border-top: 2px solid white;
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--text-color);
             border-radius: 50%;
+            border-top-color: transparent;
             animation: emoSpin 1s linear infinite;
+            margin-left: 8px;
         }
 
         @keyframes emoSpin {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .track-loading {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 24px;
+            text-align: center;
+            padding: 40px;
             color: var(--text-secondary);
-            font-size: 1rem;
-            gap: 10px;
-            font-style: italic;
         }
 
         .track-loading i {
             animation: emoSpin 1s linear infinite;
-            color: var(--accent-color);
+            margin-right: 12px;
         }
 
         .track-item.new {
@@ -1084,147 +1009,115 @@
 
         @keyframes emoSlideInUp {
             from {
-                transform: translateY(30px) scale(0.95);
                 opacity: 0;
+                transform: translateY(20px);
             }
             to {
-                transform: translateY(0) scale(1);
                 opacity: 1;
+                transform: translateY(0);
             }
         }
 
         /* Dark Footer */
         .footer {
             text-align: center;
-            padding: 24px;
+            padding: 30px;
+            background: var(--background);
             border-top: 1px solid var(--border-color);
             color: var(--text-muted);
-            font-size: 0.85rem;
-            background: var(--background);
-            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
         }
 
         .footer a {
             color: var(--accent-color);
             text-decoration: none;
-            margin: 0 12px;
             transition: var(--transition);
-            font-weight: 500;
         }
 
         .footer a:hover {
             color: var(--accent-hover);
-            text-shadow: 0 0 10px rgba(247, 37, 133, 0.5);
+            text-shadow: var(--glow-subtle);
         }
 
         /* Enhanced Responsive Design */
         @media (max-width: 768px) {
             body {
-                padding: 12px;
+                padding: 10px;
             }
 
             .container {
-                margin: 0;
                 border-radius: var(--radius);
             }
 
-            .header h1 {
-                font-size: 2.5rem;
+            .header {
+                padding: 30px 20px;
             }
 
-            .header p {
-                font-size: 1rem;
+            .header h1 {
+                font-size: 2.2rem;
             }
 
             .content {
-                padding: 24px;
+                padding: 20px;
             }
 
             .user-section {
                 flex-direction: column;
-                gap: 16px;
+                gap: 20px;
                 text-align: center;
-            }
-
-            .user-actions {
-                justify-content: center;
-            }
-
-            .now-playing-content {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .pagination-stats {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .stat-item {
-                min-width: 180px;
-                justify-content: center;
-            }
-
-            .load-more-btn {
-                width: 100%;
-                max-width: 280px;
-            }
-
-            .search-input {
-                padding: 16px 20px;
-                font-size: 1rem;
             }
 
             .track-actions {
-                flex-direction: column;
+                justify-content: center;
             }
 
-            .btn {
-                width: 100%;
+            .pagination-stats {
+                gap: 16px;
+            }
+
+            .stat-item {
+                min-width: 100px;
+            }
+
+            .time-presets {
                 justify-content: center;
             }
         }
 
         /* Enhanced Loading States */
         .btn.loading {
-            position: relative;
-            color: transparent;
+            pointer-events: none;
+            opacity: 0.8;
         }
 
         .btn.loading::after {
             content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 18px;
-            height: 18px;
-            border: 2px solid transparent;
-            border-top: 2px solid currentColor;
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid currentColor;
             border-radius: 50%;
+            border-top-color: transparent;
             animation: emoSpin 1s linear infinite;
-            color: white;
+            margin-left: 8px;
         }
 
         /* Custom Dark Scrollbar */
         ::-webkit-scrollbar {
-            width: 10px;
+            width: 8px;
         }
 
         ::-webkit-scrollbar-track {
-            background: var(--background);
-            border-radius: 5px;
+            background: var(--background-secondary);
         }
 
         ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-            border-radius: 5px;
-            border: 1px solid var(--border-color);
+            background: var(--quaternary-color);
+            border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, var(--accent-hover), var(--primary-hover));
-            box-shadow: var(--glow-subtle);
+            background: var(--border-color);
         }
 
         /* Selection styling */
@@ -1260,18 +1153,17 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1><i class="fab fa-lastfm"></i> Last.fm Scrobbler</h1>
-            <p>Embrace the darkness of your musical soul</p>
+            <h1><i class="fas fa-music"></i> Last.fm Scrobbler</h1>
+            <p>Capture your musical journey, one track at a time</p>
         </div>
 
         <div class="content">
-            <!-- Flash Messages -->
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     <div class="flash-messages">
                         {% for category, message in messages %}
                             <div class="flash-message {{ category }}">
-                                <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' if category == 'error' else 'info-circle' }}"></i>
+                                <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'error' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
                                 {{ message }}
                             </div>
                         {% endfor %}
@@ -1279,211 +1171,192 @@
                 {% endif %}
             {% endwith %}
 
-            {% if auth_url %}
-                <!-- Authentication Section -->
+            {% if not user_name %}
                 <div class="auth-section">
-                    <h2>Enter</h2>
-                    <p>Connect your Last.fm account and let the music consume your existence</p>
-                    <a href="{{ auth_url }}" class="btn">
-                        <i class="fab fa-lastfm"></i>
-                        Connect Last.fm
-                    </a>
-                </div>
-            {% else %}
-                {% if user_name %}
-                    <!-- User Section -->
-                    <div class="user-section">
-                        <div class="user-info">
-                            <div class="user-avatar">
-                                {% if user_info and user_info.image %}
-                                    <img src="{{ user_info.image }}" alt="{{ user_name }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
-                                {% else %}
-                                    {{ user_name[0].upper() }}
-                                {% endif %}
-                            </div>
-                            <div class="user-details">
-                                <h3>
-                                    {% if user_info and user_info.realname %}
-                                        {{ user_info.realname }}
-                                    {% else %}
-                                        {{ user_name }}
-                                    {% endif %}
-                                </h3>
-                                <p>
-                                    {% if user_info %}
-                                        {% if user_info.playcount %}
-                                            {{ "{:,}".format(user_info.playcount|int) }} scrobbles
-                                        {% endif %}
-                                        {% if user_info.country %}
-                                            • {{ user_info.country }}
-                                        {% endif %}
-                                        {% if user_info.subscriber %}
-                                            • <span class="subscriber-badge"><i class="fas fa-crown"></i> Pro</span>
-                                        {% endif %}
-                                    {% else %}
-                                        Lost in the void
-                                    {% endif %}
-                                </p>
-                            </div>
-                        </div>
-                        <div class="user-actions">
-                            <a href="{{ url_for('dashboard') }}" class="btn accent btn-small" title="Analytics Dashboard">
-                                <i class="fas fa-chart-line"></i>
-                            </a>
-                            {% if user_name and user_name.lower() in ['schoolbusgaming'] %}
-                                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-small" title="Admin Dashboard" style="background: linear-gradient(135deg, #ff6b35, #ff5722);">
-                                    <i class="fas fa-shield-alt"></i>
-                                </a>
-                            {% endif %}
-                            {% if user_info and user_info.url %}
-                                <a href="{{ user_info.url }}" target="_blank" class="btn secondary btn-small" title="View Last.fm Profile">
-                                    <i class="fab fa-lastfm"></i>
-                                </a>
-                            {% endif %}
-                            <a href="{{ url_for('logout') }}" class="btn secondary btn-small" title="Escape">
-                                <i class="fas fa-sign-out-alt"></i>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Now Playing Section -->
-                    <div class="now-playing-section" id="nowPlayingSection">
-                        <div class="now-playing-header">
-                            <i class="fas fa-play pulse"></i>
-                            Currently Playing
-                        </div>
-                        <div class="now-playing-content">
-                            <div class="now-playing-image" id="nowPlayingImage">
-                                <i class="fas fa-music"></i>
-                            </div>
-                            <div class="now-playing-info">
-                                <h3 id="nowPlayingTrack">Now playing!</h3>
-                                <p id="nowPlayingArtist"></p>
-                                <p id="nowPlayingAlbum"></p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Search Section -->
-                    <div class="search-section">
-                        <h2><i class="fas fa-search"></i> Search</h2>
-                        <div class="search-container">
-                            <input type="text" id="search" class="search-input" placeholder="Search for the music that haunts your soul..." autocomplete="off">
-                            <div class="loading"><i class="fas fa-spinner fa-spin"></i></div>
-                            <div id="searchResults" class="search-results"></div>
-                        </div>
-
-                        <!-- Selected Track -->
-                        <div class="selected-track" id="selectedTrack">
-                            <div class="selected-track-header">
-                                <span class="selected-track-title">
-                                    <i class="fas fa-check-circle"></i> Track Chosen
-                                </span>
-                                <button class="btn secondary btn-small" onclick="clearSelection()">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                            <div class="selected-track-info" id="selectedText"></div>
-                            <div class="track-actions">
-                                <button class="btn btn-small" onclick="scrobbleTrack()">
-                                    <i class="fas fa-music"></i>
-                                    Scrobble?
-                                </button>
-                                <button class="btn accent btn-small" onclick="updateNowPlaying()">
-                                    <i class="fas fa-play"></i>
-                                    Mark as Playing
-                                </button>
-                            </div>
-                            <div class="scrobble-time-section">
-                                <div class="scrobble-time-label">
-                                    <i class="fas fa-clock"></i> Temporal Anchor
-                                </div>
-                                <input type="text" id="scrobbleTime" class="time-input" placeholder="Leave empty for current time" value="">
-                                <div class="time-presets">
-                                    <span class="time-preset" onclick="setScrobbleTime('now')">Now</span>
-                                    <span class="time-preset" onclick="setScrobbleTime('5')">5m ago</span>
-                                    <span class="time-preset" onclick="setScrobbleTime('15')">15m ago</span>
-                                    <span class="time-preset" onclick="setScrobbleTime('30')">30m ago</span>
-                                    <span class="time-preset" onclick="setScrobbleTime('60')">1h ago</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Recent Tracks -->
-                    {% if recent_tracks %}
-                        <div class="recent-tracks">
-                            <h2><i class="fas fa-history"></i> Echoes of the Past</h2>
-                            
-                            <!-- Pagination Stats -->
-                            {% if pagination %}
-                                <div class="pagination-stats">
-                                    <div class="stat-item">
-                                        <i class="fas fa-music"></i>
-                                        <span>Total: <span class="stat-value">{{ "{:,}".format(pagination.total_tracks) }}</span></span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <i class="fas fa-file-alt"></i>
-                                        <span>Page: <span class="stat-value" id="currentPage">{{ pagination.current_page }}</span> of <span class="stat-value">{{ pagination.total_pages }}</span></span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <i class="fas fa-eye"></i>
-                                        <span>Loaded: <span class="stat-value" id="tracksShown">{{ recent_tracks|length }}</span></span>
-                                    </div>
-                                </div>
-                            {% endif %}
-                            
-                            <div class="track-list" id="trackList">
-                                {% for track in recent_tracks %}
-                                    <div class="track-item {% if track.get('@attr', {}).get('nowplaying') %}now-playing{% endif %}" 
-                                         onclick="selectFromRecent(&quot;{{ track.artist['#text']|e }}&quot;, &quot;{{ track.name|e }}&quot;, &quot;{{ track.get('album', {}).get('#text', '')|e }}&quot;)">
-                                        <div class="track-item-header">
-                                            <div>
-                                                <div class="track-name">{{ track.name }}</div>
-                                                <div class="track-artist">{{ track.artist['#text'] }}</div>
-                                                {% if track.get('album', {}).get('#text') %}
-                                                    <div class="track-artist">{{ track.album['#text'] }}</div>
-                                                {% endif %}
-                                            </div>
-                                            <div>
-                                                {% if track.get('@attr', {}).get('nowplaying') %}
-                                                    <div class="now-playing-indicator">
-                                                        <i class="fas fa-play pulse"></i>
-                                                        Bleeding
-                                                    </div>
-                                                {% else %}
-                                                    <div class="track-time">
-                                                        {% if track.get('date') %}
-                                                            {{ track.date['#text'] }}
-                                                        {% endif %}
-                                                    </div>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                            
-                            <!-- Load More Button -->
-                            {% if pagination and pagination.current_page < pagination.total_pages %}
-                                <div class="pagination-container">
-                                    <button class="load-more-btn" id="loadMoreBtn" onclick="loadMoreTracks()">
-                                        <i class="fas fa-plus"></i>
-                                        Load more?
-                                    </button>
-                                </div>
-                            {% endif %}
+                    <h2><i class="fas fa-key"></i> Connect to Last.fm</h2>
+                    <p>Authenticate with your Last.fm account to start scrobbling tracks and access your listening history.</p>
+                    {% if auth_url %}
+                        <a href="{{ auth_url }}" class="btn">
+                            <i class="fas fa-lastfm"></i>
+                            Authenticate with Last.fm
+                        </a>
+                    {% else %}
+                        <div class="error">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Authentication URL not available. Please check server configuration.
                         </div>
                     {% endif %}
+                </div>
+            {% else %}
+                <div class="user-section">
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            {% if user_info and user_info.image %}
+                                <img src="{{ user_info.image }}" alt="{{ user_name }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                            {% else %}
+                                {{ user_name[0].upper() }}
+                            {% endif %}
+                        </div>
+                        <div class="user-details">
+                            <h3>{{ user_info.realname if user_info and user_info.realname else user_name }}</h3>
+                            <p>
+                                <i class="fas fa-music"></i>
+                                {{ user_info.playcount if user_info else "0" }} scrobbles
+                                {% if user_info and user_info.subscriber %}
+                                    <span class="subscriber-badge">
+                                        <i class="fas fa-crown"></i>
+                                        Pro
+                                    </span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="user-actions">
+                        {% if is_admin %}
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-small primary">
+                            <i class="fas fa-shield-alt"></i>
+                            Admin
+                        </a>
+                        {% endif %}
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-small accent">
+                            <i class="fas fa-chart-line"></i>
+                            Dashboard
+                        </a>
+                        <a href="{{ url_for('logout') }}" class="btn btn-small secondary">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+
+                <div class="now-playing-section" id="nowPlayingSection">
+                    <div class="now-playing-header">
+                        <i class="fas fa-broadcast-tower pulse"></i>
+                        Now Playing
+                    </div>
+                    <div class="now-playing-content" id="nowPlayingContent">
+                        <!-- Now playing content will be inserted here -->
+                    </div>
+                </div>
+
+                <div class="search-section">
+                    <h2><i class="fas fa-search"></i> Search & Scrobble</h2>
+                    <div class="search-container">
+                        <input type="text" id="search" class="search-input" placeholder="Search for a track..." autocomplete="off">
+                        <div class="search-results" id="searchResults">
+                            <!-- Search results will appear here -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="selected-track" id="selectedTrack">
+                    <div class="selected-track-header">Selected Track</div>
+                    <div class="selected-track-title" id="selectedTitle">No track selected</div>
+                    <div class="selected-track-info" id="selectedInfo">Select a track from search results to scrobble</div>
+                    <div id="selectedText" style="display: none;"></div>
+                    
+                    <div class="scrobble-time-section">
+                        <div class="scrobble-time-label">
+                            <i class="fas fa-clock"></i>
+                            Scrobble Time (optional)
+                        </div>
+                        <input type="datetime-local" id="scrobbleTime" class="time-input">
+                        <div class="time-presets">
+                            <button class="time-preset" onclick="setScrobbleTime('now')">Now</button>
+                            <button class="time-preset" onclick="setScrobbleTime('1min')">1 min ago</button>
+                            <button class="time-preset" onclick="setScrobbleTime('5min')">5 min ago</button>
+                            <button class="time-preset" onclick="setScrobbleTime('15min')">15 min ago</button>
+                            <button class="time-preset" onclick="setScrobbleTime('30min')">30 min ago</button>
+                        </div>
+                    </div>
+                    
+                    <div class="track-actions">
+                        <button class="btn" onclick="scrobbleTrack()">
+                            <i class="fas fa-music"></i>
+                            Scrobble Track
+                        </button>
+                        <button class="btn accent" onclick="updateNowPlaying()">
+                            <i class="fas fa-broadcast-tower"></i>
+                            Set Now Playing
+                        </button>
+                        <button class="btn secondary" onclick="clearSelection()">
+                            <i class="fas fa-times"></i>
+                            Clear
+                        </button>
+                    </div>
+                </div>
+
+                {% if recent_tracks %}
+                    <div class="recent-tracks">
+                        <h2><i class="fas fa-history"></i> Recent Tracks</h2>
+                        
+                        {% if pagination %}
+                            <div class="pagination-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">{{ pagination.current_page }}</div>
+                                    <div>Page</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">{{ pagination.total_pages }}</div>
+                                    <div>Total Pages</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">{{ pagination.total_tracks }}</div>
+                                    <div>Total Tracks</div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div class="track-list" id="trackList">
+                            {% for track in recent_tracks %}
+                                <div class="track-item" onclick="selectFromRecent('{{ track.artist['#text'] if track.artist and track.artist['#text'] else 'Unknown Artist' }}', '{{ track.name if track.name else 'Unknown Track' }}', '{{ track.album['#text'] if track.album and track.album['#text'] else '' }}')">
+                                    <div class="track-item-header">
+                                        <div>
+                                            <div class="track-name">
+                                                {% if track.get('@attr', {}).get('nowplaying') %}
+                                                    <span class="now-playing-indicator">
+                                                        <i class="fas fa-broadcast-tower pulse"></i>
+                                                        Now Playing
+                                                    </span>
+                                                {% endif %}
+                                                {{ track.name if track.name else 'Unknown Track' }}
+                                            </div>
+                                            <div class="track-artist">{{ track.artist['#text'] if track.artist and track.artist['#text'] else 'Unknown Artist' }}</div>
+                                            {% if track.album and track.album['#text'] %}
+                                                <div class="track-artist" style="opacity: 0.7;">{{ track.album['#text'] }}</div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="track-time">
+                                            {% if track.get('@attr', {}).get('nowplaying') %}
+                                                <span class="now-playing">Playing now</span>
+                                            {% elif track.date %}
+                                                {{ track.date['#text'] if track.date['#text'] else 'Unknown time' }}
+                                            {% else %}
+                                                Unknown time
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        {% if pagination and pagination.current_page < pagination.total_pages %}
+                            <div class="pagination-container">
+                                <button class="load-more-btn" id="loadMoreBtn" onclick="loadMoreTracks()">
+                                    <i class="fas fa-plus"></i>
+                                    Load More Tracks
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
                 {% endif %}
             {% endif %}
         </div>
 
         <div class="footer">
-            <p>
-                <a href="{{ url_for('terms') }}" target="_blank">Terms</a>
-                <a href="{{ url_for('privacy') }}" target="_blank">Privacy</a>
-                • &copy; 2025 fentbuscoding
+            <p>&copy; 2025 fentbuscoding | 
+                <a href="{{ url_for('terms') }}">Terms</a> | 
+                <a href="{{ url_for('privacy') }}">Privacy</a>
             </p>
         </div>
     </div>
@@ -1512,29 +1385,22 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            setupEventListeners();
-            
-            // Auto-focus search input
-            if (searchInput) {
-                searchInput.focus();
-            }
-
-            // Start now playing updates if user is logged in
             {% if user_name %}
-            startNowPlayingUpdates();
+                setupEventListeners();
+                startNowPlayingUpdates();
+                updateNowPlayingInfo();
             {% endif %}
         });
 
         function setupEventListeners() {
-            if (!searchInput) return;
+            if (searchInput) {
+                searchInput.addEventListener('input', handleSearch);
+                searchInput.addEventListener('keydown', handleKeyDown);
+            }
 
-            // Search input
-            searchInput.addEventListener('input', handleSearch);
-            searchInput.addEventListener('keydown', handleKeyDown);
-            
-            // Click outside to close results
+            // Hide search results when clicking outside
             document.addEventListener('click', function(e) {
-                if (!e.target.closest('.search-container')) {
+                if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
                     hideSearchResults();
                 }
             });
@@ -1544,113 +1410,71 @@
             if (isLoadingTracks || currentPage >= totalPages) return;
             
             isLoadingTracks = true;
-            const loadMoreBtn = document.getElementById('loadMoreBtn');
-            const trackList = document.getElementById('trackList');
-            
-            // Show loading state
-            loadMoreBtn.classList.add('loading');
-            loadMoreBtn.disabled = true;
-            
-            // Add loading skeleton
-            const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'track-loading';
-            loadingDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Summoning more echoes...';
-            trackList.appendChild(loadingDiv);
-            
+            const btn = loadMoreBtn;
+            btn.classList.add('loading');
+            btn.disabled = true;
+
             try {
                 const response = await fetch(`/recent-tracks?page=${currentPage + 1}&limit=20`);
                 const data = await response.json();
-                
-                if (data.success && data.tracks.length > 0) {
-                    // Remove loading skeleton
-                    loadingDiv.remove();
-                    
-                    // Add new tracks with animation
-                    data.tracks.forEach((track, index) => {
-                        setTimeout(() => {
-                            const trackElement = createTrackElement(track);
-                            trackElement.classList.add('new');
-                            trackList.appendChild(trackElement);
-                            tracksLoaded++;
-                            
-                            // Update tracks shown counter
-                            const tracksShownElement = document.getElementById('tracksShown');
-                            if (tracksShownElement) {
-                                tracksShownElement.textContent = tracksLoaded.toLocaleString();
-                            }
-                        }, index * 50); // Faster stagger
-                    });
-                    
-                    // Update pagination info
+
+                if (data.success) {
                     currentPage = data.pagination.current_page;
-                    const currentPageElement = document.getElementById('currentPage');
-                    if (currentPageElement) {
-                        currentPageElement.textContent = currentPage;
+                    totalPages = data.pagination.total_pages;
+
+                    data.tracks.forEach(track => {
+                        const trackElement = createTrackElement(track);
+                        trackList.appendChild(trackElement);
+                    });
+
+                    if (currentPage >= totalPages) {
+                        btn.style.display = 'none';
                     }
-                    
-                    // Hide load more button if no more pages
-                    if (!data.pagination.has_next) {
-                        loadMoreBtn.style.display = 'none';
-                    }
-                    
-                    // Show success notification
-                    showNotification(`${data.tracks.length} more echoes summoned from the void`, 'success');
-                    
                 } else {
-                    loadingDiv.remove();
-                    showNotification('The void holds no more secrets', 'info');
-                    loadMoreBtn.style.display = 'none';
+                    console.error('Failed to load more tracks:', data.error);
                 }
-                
             } catch (error) {
                 console.error('Error loading more tracks:', error);
-                loadingDiv.remove();
-                showNotification('The darkness consumed our request', 'error');
             } finally {
                 isLoadingTracks = false;
-                loadMoreBtn.classList.remove('loading');
-                loadMoreBtn.disabled = false;
+                btn.classList.remove('loading');
+                btn.disabled = false;
             }
         }
 
         function createTrackElement(track) {
             const div = document.createElement('div');
-            div.className = `track-item ${track['@attr']?.nowplaying ? 'now-playing' : ''}`;
-            
-            const albumText = track.album?.['#text'] || '';
-            const dateText = track.date?.['#text'] || '';
-            
+            div.className = 'track-item new';
+            div.onclick = () => selectFromRecent(
+                track.artist?.['#text'] || 'Unknown Artist',
+                track.name || 'Unknown Track',
+                track.album?.['#text'] || ''
+            );
+
+            const isNowPlaying = track['@attr']?.nowplaying;
+            const timeText = isNowPlaying ? 
+                '<span class="now-playing">Playing now</span>' : 
+                (track.date?.['#text'] || 'Unknown time');
+
             div.innerHTML = `
                 <div class="track-item-header">
                     <div>
-                        <div class="track-name">${escapeHtml(track.name)}</div>
-                        <div class="track-artist">${escapeHtml(track.artist['#text'])}</div>
-                        ${albumText ? `<div class="track-artist">${escapeHtml(albumText)}</div>` : ''}
+                        <div class="track-name">
+                            ${isNowPlaying ? '<span class="now-playing-indicator"><i class="fas fa-broadcast-tower pulse"></i>Now Playing</span>' : ''}
+                            ${track.name || 'Unknown Track'}
+                        </div>
+                        <div class="track-artist">${track.artist?.['#text'] || 'Unknown Artist'}</div>
+                        ${track.album?.['#text'] ? `<div class="track-artist" style="opacity: 0.7;">${track.album['#text']}</div>` : ''}
                     </div>
-                    <div>
-                        ${track['@attr']?.nowplaying ? 
-                            `<div class="now-playing-indicator">
-                                <i class="fas fa-play pulse"></i>
-                                Bleeding
-                            </div>` :
-                            `<div class="track-time">${escapeHtml(dateText)}</div>`
-                        }
-                    </div>
+                    <div class="track-time">${timeText}</div>
                 </div>
             `;
-            
-            // Add click handler
-            div.onclick = () => selectFromRecent(
-                track.artist['#text'],
-                track.name,
-                albumText
-            );
-            
+
             return div;
         }
 
         function startNowPlayingUpdates() {
-            updateNowPlayingInfo();
+            // Update now playing info every 30 seconds
             nowPlayingInterval = setInterval(updateNowPlayingInfo, 30000);
         }
 
@@ -1658,44 +1482,94 @@
             try {
                 const response = await fetch('/now-playing-info');
                 const data = await response.json();
-                
+
                 if (data.success && data.nowplaying) {
                     showNowPlaying(data.track);
                 } else {
                     hideNowPlaying();
                 }
             } catch (error) {
-                console.error('Error fetching now playing:', error);
+                console.error('Error updating now playing:', error);
             }
         }
 
         function showNowPlaying(track) {
-            document.getElementById('nowPlayingTrack').textContent = track.name;
-            document.getElementById('nowPlayingArtist').textContent = `by ${track.artist}`;
-            document.getElementById('nowPlayingAlbum').textContent = track.album ? `from ${track.album}` : '';
+            if (!nowPlayingSection) return;
+
+            const content = document.getElementById('nowPlayingContent');
+            const artistName = track.artist?.['#text'] || 'Unknown Artist';
+            const trackName = track.name || 'Unknown Track';
+            const albumName = track.album?.['#text'] || '';
             
-            const imageElement = document.getElementById('nowPlayingImage');
-            if (track.image) {
-                imageElement.innerHTML = `<img src="${track.image}" alt="Album Art" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">`;
-            } else {
-                imageElement.innerHTML = '<i class="fas fa-music"></i>';
+            // Get track image
+            let imageUrl = '';
+            if (track.image && Array.isArray(track.image)) {
+                for (let img of track.image.reverse()) {
+                    if (img['#text']) {
+                        imageUrl = img['#text'];
+                        break;
+                    }
+                }
             }
-            
+
+            content.innerHTML = `
+                <img class="now-playing-image" src="${imageUrl || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCA2NCA2NCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIGZpbGw9IiMyMTI2MmQiIHJ4PSIxMiIvPjwvc3ZnPg=='}" alt="${trackName}" 
+                     onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCA2NCA2NCIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIGZpbGw9IiMyMTI2MmQiIHJ4PSIxMiIvPjwvc3ZnPg=='">
+                <div class="now-playing-info">
+                    <h3>${trackName}</h3>
+                    <p>${artistName}${albumName ? ` • ${albumName}` : ''}</p>
+                </div>
+            `;
+
             nowPlayingSection.classList.add('show');
-            nowPlayingSection.onclick = () => selectFromRecent(track.artist, track.name, track.album || '');
         }
 
         function hideNowPlaying() {
-            nowPlayingSection.classList.remove('show');
+            if (nowPlayingSection) {
+                nowPlayingSection.classList.remove('show');
+            }
         }
 
         function setScrobbleTime(value) {
-            scrobbleTimeInput.value = value;
+            const now = new Date();
+            let targetTime;
+
+            switch (value) {
+                case 'now':
+                    targetTime = now;
+                    break;
+                case '1min':
+                    targetTime = new Date(now.getTime() - 60000);
+                    break;
+                case '5min':
+                    targetTime = new Date(now.getTime() - 300000);
+                    break;
+                case '15min':
+                    targetTime = new Date(now.getTime() - 900000);
+                    break;
+                case '30min':
+                    targetTime = new Date(now.getTime() - 1800000);
+                    break;
+                default:
+                    targetTime = now;
+            }
+
+            // Format for datetime-local input
+            const year = targetTime.getFullYear();
+            const month = String(targetTime.getMonth() + 1).padStart(2, '0');
+            const day = String(targetTime.getDate()).padStart(2, '0');
+            const hours = String(targetTime.getHours()).padStart(2, '0');
+            const minutes = String(targetTime.getMinutes()).padStart(2, '0');
+
+            if (scrobbleTimeInput) {
+                scrobbleTimeInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+            }
         }
 
         function handleSearch(e) {
-            clearTimeout(searchTimeout);
             const query = e.target.value.trim();
+            
+            clearTimeout(searchTimeout);
             
             if (query.length < 2) {
                 hideSearchResults();
@@ -1708,150 +1582,132 @@
         }
 
         function handleKeyDown(e) {
-            const results = document.querySelectorAll('.search-result');
-            const active = document.querySelector('.search-result.active');
+            const results = searchResults.querySelectorAll('.search-result');
+            const activeResult = searchResults.querySelector('.search-result.active');
             
             if (e.key === 'ArrowDown') {
                 e.preventDefault();
-                if (active) {
-                    active.classList.remove('active');
-                    const next = active.nextElementSibling;
-                    if (next) {
-                        next.classList.add('active');
-                    } else {
-                        results[0]?.classList.add('active');
-                    }
-                } else {
-                    results[0]?.classList.add('active');
+                const next = activeResult ? activeResult.nextElementSibling : results[0];
+                if (next) {
+                    if (activeResult) activeResult.classList.remove('active');
+                    next.classList.add('active');
                 }
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
-                if (active) {
-                    active.classList.remove('active');
-                    const prev = active.previousElementSibling;
-                    if (prev) {
-                        prev.classList.add('active');
-                    } else {
-                        results[results.length - 1]?.classList.add('active');
-                    }
-                } else {
-                    results[results.length - 1]?.classList.add('active');
+                const prev = activeResult ? activeResult.previousElementSibling : results[results.length - 1];
+                if (prev) {
+                    if (activeResult) activeResult.classList.remove('active');
+                    prev.classList.add('active');
                 }
             } else if (e.key === 'Enter') {
                 e.preventDefault();
-                if (active) {
-                    active.click();
+                if (activeResult) {
+                    activeResult.click();
                 }
             } else if (e.key === 'Escape') {
                 hideSearchResults();
+                searchInput.blur();
             }
         }
 
         async function fetchTracks(query) {
+            // Check cache first
             if (searchCache.has(query)) {
                 displaySearchResults(searchCache.get(query));
                 return;
             }
 
-            try {
-                showLoading(true);
-                const response = await fetch(`/search?q=${encodeURIComponent(query)}&limit=10`);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                if (data.error) {
-                    throw new Error(data.error);
-                }
+            showLoading(true);
 
-                searchCache.set(query, data);
-                displaySearchResults(data);
-                
+            try {
+                const response = await fetch(`/search?q=${encodeURIComponent(query)}&limit=10`);
+                const data = await response.json();
+
+                if (response.ok && Array.isArray(data)) {
+                    searchCache.set(query, data);
+                    displaySearchResults(data);
+                } else {
+                    displaySearchError(data.error || 'Search failed');
+                }
             } catch (error) {
                 console.error('Search error:', error);
-                displaySearchError(error.message);
+                displaySearchError('Network error occurred');
             } finally {
                 showLoading(false);
             }
         }
 
         function displaySearchResults(tracks) {
-            searchResults.innerHTML = '';
-            
-            if (tracks.length === 0) {
-                searchResults.innerHTML = '<div class="no-results"><i class="fas fa-search"></i> The void yields nothing</div>';
+            if (!tracks || tracks.length === 0) {
+                searchResults.innerHTML = '<div class="no-results">No tracks found</div>';
                 showSearchResults();
                 return;
             }
 
-            tracks.forEach((track, index) => {
-                const div = document.createElement('div');
-                div.className = 'search-result';
-                div.innerHTML = `
-                    <div class="search-result-info">
+            const resultsHTML = tracks.map(track => {
+                const listeners = parseInt(track.listeners) || 0;
+                return `
+                    <div class="search-result" onclick="selectTrack(${escapeHtml(JSON.stringify(track))})">
                         <div class="search-result-title">${escapeHtml(track.name)}</div>
-                        <div class="search-result-meta">by ${escapeHtml(track.artist)}</div>
-                    </div>
-                    <div class="search-result-listeners">
-                        <i class="fas fa-users"></i>
-                        ${formatNumber(track.listeners)}
+                        <div class="search-result-meta">
+                            <span>${escapeHtml(track.artist)}</span>
+                            <span class="search-result-listeners">${formatNumber(listeners)} listeners</span>
+                        </div>
                     </div>
                 `;
-                
-                div.addEventListener('click', () => selectTrack(track));
-                searchResults.appendChild(div);
-            });
-            
+            }).join('');
+
+            searchResults.innerHTML = resultsHTML;
             showSearchResults();
         }
 
         function displaySearchError(message) {
-            searchResults.innerHTML = `
-                <div class="no-results">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    Error: ${escapeHtml(message)}
-                </div>
-            `;
+            searchResults.innerHTML = `<div class="no-results" style="color: var(--error-color);">${escapeHtml(message)}</div>`;
             showSearchResults();
         }
 
         function selectTrack(track) {
             selectedTrackData = track;
-            selectedText.innerHTML = `
-                <strong>${escapeHtml(track.name)}</strong><br>
-                by ${escapeHtml(track.artist)}
-            `;
+            
+            document.getElementById('selectedTitle').textContent = track.name;
+            document.getElementById('selectedInfo').textContent = `by ${track.artist}`;
+            selectedText.value = JSON.stringify(track);
+            
             selectedTrack.classList.add('show');
             hideSearchResults();
             searchInput.value = '';
         }
 
         function selectFromRecent(artist, track, album) {
-            selectedTrackData = { artist, name: track, album };
-            selectedText.innerHTML = `
-                <strong>${escapeHtml(track)}</strong><br>
-                by ${escapeHtml(artist)}
-                ${album ? `<br>from ${escapeHtml(album)}` : ''}
-            `;
+            selectedTrackData = {
+                name: track,
+                artist: artist,
+                album: album || ''
+            };
+            
+            document.getElementById('selectedTitle').textContent = track;
+            document.getElementById('selectedInfo').textContent = `by ${artist}${album ? ` • ${album}` : ''}`;
+            selectedText.value = JSON.stringify(selectedTrackData);
+            
             selectedTrack.classList.add('show');
+            
+            // Scroll to selected track
             selectedTrack.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
         function clearSelection() {
             selectedTrackData = null;
             selectedTrack.classList.remove('show');
-            scrobbleTimeInput.value = '';
+            if (scrobbleTimeInput) scrobbleTimeInput.value = '';
         }
 
         async function scrobbleTrack() {
             if (!selectedTrackData) return;
-            
-            const button = event.target.closest('.btn');
-            button.classList.add('loading');
-            
+
+            const btn = event.target;
+            btn.classList.add('loading');
+            btn.disabled = true;
+
             try {
                 const formData = new FormData();
                 formData.append('artist', selectedTrackData.artist);
@@ -1859,40 +1715,43 @@
                 if (selectedTrackData.album) {
                     formData.append('album', selectedTrackData.album);
                 }
-                
-                const scrobbleTime = scrobbleTimeInput.value.trim();
-                if (scrobbleTime) {
-                    formData.append('scrobble_time', scrobbleTime);
+                if (scrobbleTimeInput && scrobbleTimeInput.value) {
+                    formData.append('scrobble_time', scrobbleTimeInput.value);
                 }
-                
+
                 const response = await fetch('/scrobble', {
                     method: 'POST',
                     body: formData
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (data.success) {
                     showNotification('Track scrobbled successfully!', 'success');
                     clearSelection();
+                    // Refresh recent tracks after a short delay
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
                 } else {
-                    showNotification(data.error || 'Failed to scrobble track', 'error');
+                    showNotification(`Scrobble failed: ${data.error}`, 'error');
                 }
-                
             } catch (error) {
                 console.error('Scrobble error:', error);
-                showNotification('Failed to scrobble track', 'error');
+                showNotification('Network error occurred', 'error');
             } finally {
-                button.classList.remove('loading');
+                btn.classList.remove('loading');
+                btn.disabled = false;
             }
         }
 
         async function updateNowPlaying() {
             if (!selectedTrackData) return;
-            
-            const button = event.target.closest('.btn');
-            button.classList.add('loading');
-            
+
+            const btn = event.target;
+            btn.classList.add('loading');
+            btn.disabled = true;
+
             try {
                 const formData = new FormData();
                 formData.append('artist', selectedTrackData.artist);
@@ -1900,14 +1759,14 @@
                 if (selectedTrackData.album) {
                     formData.append('album', selectedTrackData.album);
                 }
-                
+
                 const response = await fetch('/now-playing', {
                     method: 'POST',
                     body: formData
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (data.success) {
                     showNotification('Now playing updated!', 'success');
                     updateNowPlayingInfo();
@@ -1919,7 +1778,8 @@
                 console.error('Now playing error:', error);
                 showNotification('Failed to update now playing', 'error');
             } finally {
-                button.classList.remove('loading');
+                btn.classList.remove('loading');
+                btn.disabled = false;
             }
         }
 

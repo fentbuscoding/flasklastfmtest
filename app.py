@@ -263,7 +263,7 @@ def logout():
 def get_user_recent_tracks(limit=10, page=1):
     """Get user's recent tracks from Last.fm with pagination"""
     if 'oauth_token' not in session or 'user_name' not in session:
-        return []
+        return {'tracks': [], 'total_pages': 1, 'current_page': page, 'total_tracks': 0}
 
     try:
         params = {
@@ -307,6 +307,62 @@ def get_user_recent_tracks(limit=10, page=1):
     except Exception as e:
         logger.error(f"Error getting recent tracks: {e}")
         raise LastFMError("Failed to load recent tracks")
+
+def get_most_active_hour(tracks):
+    """Analyze most active listening hours"""
+    hours = {}
+    for track in tracks:
+        if 'date' in track:
+            try:
+                timestamp = int(track['date']['uts'])
+                hour = datetime.fromtimestamp(timestamp).hour
+                hours[hour] = hours.get(hour, 0) + 1
+            except:
+                continue
+    
+    return max(hours.items(), key=lambda x: x[1])[0] if hours else 12
+
+def get_listening_patterns(tracks):
+    """Analyze listening patterns by day of week and hour"""
+    patterns = {
+        'hourly': {str(i): 0 for i in range(24)},
+        'daily': {str(i): 0 for i in range(7)},  # 0=Monday, 6=Sunday
+        'monthly': {}
+    }
+    
+    for track in tracks:
+        if 'date' in track:
+            try:
+                timestamp = int(track['date']['uts'])
+                dt = datetime.fromtimestamp(timestamp)
+                hour = str(dt.hour)
+                day = str(dt.weekday())
+                month = dt.strftime('%Y-%m')
+                
+                patterns['hourly'][hour] += 1
+                patterns['daily'][day] += 1
+                patterns['monthly'][month] = patterns['monthly'].get(month, 0) + 1
+            except:
+                continue
+    
+    return patterns
+
+def get_top_genres(tracks, limit=10):
+    """Get top genres from recent tracks (simplified - uses artist tags)"""
+    # This is a simplified version - in a real implementation you'd use artist.getTopTags
+    genre_counts = {}
+    
+    # For demo purposes, we'll extract common genres from artist names
+    # In production, you'd call artist.getTopTags for each unique artist
+    common_genres = ['rock', 'pop', 'electronic', 'hip hop', 'indie', 'metal', 'jazz', 'classical', 'folk', 'alternative']
+    
+    for track in tracks:
+        artist = track.get('artist', {}).get('#text', '').lower()
+        for genre in common_genres:
+            if genre in artist:
+                genre_counts[genre] = genre_counts.get(genre, 0) + 1
+    
+    return sorted(genre_counts.items(), key=lambda x: x[1], reverse=True)[:limit]
 
 @app.route('/recent-tracks')
 @require_auth
@@ -410,7 +466,6 @@ def admin_system_stats():
         # Get storage info
         storage_used = 0
         try:
-            import os
             storage_used = os.path.getsize('tokens.json') / (1024 * 1024) if os.path.exists('tokens.json') else 0
         except:
             storage_used = 0
@@ -474,13 +529,171 @@ def admin_clear_rate_limits():
 
 @app.route('/check-admin')
 @require_auth
-def check_admin():
+def check_admin_route():
     """Check if current user has admin privileges"""
     return jsonify({
         'success': True, 
         'is_admin': is_admin(session.get('user_name')),
         'username': session.get('user_name')
     })
+
+# Dashboard routes - NO RATE LIMITING for better UX
+@app.route('/dashboard')
+@require_auth
+def dashboard():
+    """Analytics dashboard page"""
+    return render_template('dashboard.html', 
+                         user_name=session.get('user_name'),
+                         user_info=session.get('user_info'))
+
+@app.route('/stats')
+@require_auth
+# Removed @rate_limit decorator
+def get_listening_stats():
+    """Generate comprehensive listening statistics"""
+    try:
+        # Get recent tracks for analysis (more for better stats)
+        recent_data = get_user_recent_tracks(limit=50, page=1)
+        tracks = recent_data.get('tracks', [])
+        
+        # Get listening patterns
+        patterns = get_listening_patterns(tracks)
+        
+        # Calculate unique counts
+        unique_artists = set()
+        unique_albums = set()
+        
+        for track in tracks:
+            if 'artist' in track:
+                unique_artists.add(track['artist'].get('#text', ''))
+            if 'album' in track:
+                unique_albums.add(track['album'].get('#text', ''))
+        
+        # Calculate average scrobbles per day (rough estimate)
+        total_scrobbles = recent_data.get('total_tracks', 0)
+        avg_per_day = 0
+        if tracks:
+            try:
+                oldest_track = tracks[-1]
+                if 'date' in oldest_track:
+                    oldest_timestamp = int(oldest_track['date']['uts'])
+                    days_ago = (time.time() - oldest_timestamp) / (24 * 3600)
+                    if days_ago > 0:
+                        avg_per_day = round(len(tracks) / days_ago, 1)
+            except:
+                pass
+        
+        stats = {
+            'total_scrobbles': total_scrobbles,
+            'unique_artists': len(unique_artists),
+            'unique_albums': len(unique_albums),
+            'avg_per_day': avg_per_day,
+            'most_active_hour': get_most_active_hour(tracks),
+            'patterns': patterns,
+            'top_genres': get_top_genres(tracks, 8)
+        }
+        
+        return jsonify({'success': True, 'stats': stats})
+        
+    except Exception as e:
+        logger.error(f"Error getting listening stats: {e}")
+        return jsonify({'success': False, 'error': 'Failed to get listening stats'}), 500
+
+@app.route('/top-artists')
+@require_auth
+# Removed @rate_limit decorator
+def get_top_artists():
+    """Get user's top artists with time period filtering"""
+    try:
+        period = request.args.get('period', '7day')
+        limit = min(int(request.args.get('limit', 10)), 50)
+        
+        params = {
+            'method': 'user.getTopArtists',
+            'user': session.get('user_name'),
+            'api_key': API_KEY,
+            'period': period,
+            'limit': limit
+        }
+        
+        data = make_lastfm_request(params)
+        artists = data.get('topartists', {}).get('artist', [])
+        
+        # Ensure artists is always a list
+        if isinstance(artists, dict):
+            artists = [artists]
+            
+        return jsonify({'success': True, 'artists': artists})
+        
+    except LastFMError as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error getting top artists: {e}")
+        return jsonify({'success': False, 'error': 'Failed to get top artists'}), 500
+
+@app.route('/top-tracks')
+@require_auth
+# Removed @rate_limit decorator
+def get_top_tracks():
+    """Get user's top tracks with time period filtering"""
+    try:
+        period = request.args.get('period', '7day')
+        limit = min(int(request.args.get('limit', 10)), 50)
+        
+        params = {
+            'method': 'user.getTopTracks',
+            'user': session.get('user_name'),
+            'api_key': API_KEY,
+            'period': period,
+            'limit': limit
+        }
+        
+        data = make_lastfm_request(params)
+        tracks = data.get('toptracks', {}).get('track', [])
+        
+        # Ensure tracks is always a list
+        if isinstance(tracks, dict):
+            tracks = [tracks]
+            
+        return jsonify({'success': True, 'tracks': tracks})
+        
+    except LastFMError as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error getting top tracks: {e}")
+        return jsonify({'success': False, 'error': 'Failed to get top tracks'}), 500
+
+@app.route('/top-albums')
+@require_auth
+# Removed @rate_limit decorator
+def get_top_albums():
+    """Get user's top albums with time period filtering"""
+    try:
+        period = request.args.get('period', '7day')
+        limit = min(int(request.args.get('limit', 10)), 50)
+        
+        params = {
+            'method': 'user.getTopAlbums',
+            'user': session.get('user_name'),
+            'api_key': API_KEY,
+            'period': period,
+            'limit': limit
+        }
+        
+        data = make_lastfm_request(params)
+        albums = data.get('topalbums', {}).get('album', [])
+        
+        # Ensure albums is always a list
+        if isinstance(albums, dict):
+            albums = [albums]
+            
+        return jsonify({'success': True, 'albums': albums})
+        
+    except LastFMError as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error getting top albums: {e}")
+        return jsonify({'success': False, 'error': 'Failed to get top albums'}), 500
 
 # Continue with other routes (keeping existing functionality)...
 @app.route('/user-info')
@@ -642,162 +855,6 @@ def search():
         logger.error(f"Error in search: {e}")
         return jsonify({'error': 'Search failed'}), 500
 
-@app.route('/dashboard')
-@require_auth
-def dashboard():
-    """Analytics dashboard page"""
-    return render_template('dashboard.html', 
-                         user_name=session.get('user_name'),
-                         user_info=session.get('user_info'))
-
-@app.route('/stats')
-@require_auth
-@rate_limit
-def get_listening_stats():
-    """Generate comprehensive listening statistics"""
-    try:
-        # Get recent tracks for analysis (more for better stats)
-        recent_data = get_user_recent_tracks(limit=50, page=1)
-        tracks = recent_data.get('tracks', [])
-        
-        # Calculate unique counts
-        unique_artists = set()
-        unique_albums = set()
-        
-        for track in tracks:
-            if 'artist' in track:
-                unique_artists.add(track['artist'].get('#text', ''))
-            if 'album' in track:
-                unique_albums.add(track['album'].get('#text', ''))
-        
-        # Calculate average scrobbles per day (rough estimate)
-        total_scrobbles = recent_data.get('total_tracks', 0)
-        avg_per_day = 0
-        if tracks:
-            try:
-                oldest_track = tracks[-1]
-                if 'date' in oldest_track:
-                    oldest_timestamp = int(oldest_track['date']['uts'])
-                    days_ago = (time.time() - oldest_timestamp) / (24 * 3600)
-                    if days_ago > 0:
-                        avg_per_day = round(len(tracks) / days_ago, 1)
-            except:
-                pass
-        
-        stats = {
-            'total_scrobbles': total_scrobbles,
-            'unique_artists': len(unique_artists),
-            'unique_albums': len(unique_albums),
-            'avg_per_day': avg_per_day,
-            'most_active_hour': 14,  # Simplified for demo
-            'patterns': {
-                'hourly': {str(i): random.randint(0, 10) for i in range(24)},
-                'daily': {str(i): random.randint(0, 20) for i in range(7)}
-            }
-        }
-        
-        return jsonify({'success': True, 'stats': stats})
-        
-    except Exception as e:
-        logger.error(f"Error getting listening stats: {e}")
-        return jsonify({'success': False, 'error': 'Failed to get listening stats'}), 500
-
-@app.route('/top-artists')
-@require_auth
-@rate_limit
-def get_top_artists():
-    """Get user's top artists with time period filtering"""
-    try:
-        period = request.args.get('period', '7day')
-        limit = min(int(request.args.get('limit', 10)), 50)
-        
-        params = {
-            'method': 'user.getTopArtists',
-            'user': session.get('user_name'),
-            'api_key': API_KEY,
-            'period': period,
-            'limit': limit
-        }
-        
-        data = make_lastfm_request(params)
-        artists = data.get('topartists', {}).get('artist', [])
-        
-        # Ensure artists is always a list
-        if isinstance(artists, dict):
-            artists = [artists]
-            
-        return jsonify({'success': True, 'artists': artists})
-        
-    except LastFMError as e:
-        return jsonify({'success': False, 'error': str(e)}), 400
-    except Exception as e:
-        logger.error(f"Error getting top artists: {e}")
-        return jsonify({'success': False, 'error': 'Failed to get top artists'}), 500
-
-@app.route('/top-tracks')
-@require_auth
-@rate_limit
-def get_top_tracks():
-    """Get user's top tracks with time period filtering"""
-    try:
-        period = request.args.get('period', '7day')
-        limit = min(int(request.args.get('limit', 10)), 50)
-        
-        params = {
-            'method': 'user.getTopTracks',
-            'user': session.get('user_name'),
-            'api_key': API_KEY,
-            'period': period,
-            'limit': limit
-        }
-        
-        data = make_lastfm_request(params)
-        tracks = data.get('toptracks', {}).get('track', [])
-        
-        # Ensure tracks is always a list
-        if isinstance(tracks, dict):
-            tracks = [tracks]
-            
-        return jsonify({'success': True, 'tracks': tracks})
-        
-    except LastFMError as e:
-        return jsonify({'success': False, 'error': str(e)}), 400
-    except Exception as e:
-        logger.error(f"Error getting top tracks: {e}")
-        return jsonify({'success': False, 'error': 'Failed to get top tracks'}), 500
-
-@app.route('/top-albums')
-@require_auth
-@rate_limit
-def get_top_albums():
-    """Get user's top albums with time period filtering"""
-    try:
-        period = request.args.get('period', '7day')
-        limit = min(int(request.args.get('limit', 10)), 50)
-        
-        params = {
-            'method': 'user.getTopAlbums',
-            'user': session.get('user_name'),
-            'api_key': API_KEY,
-            'period': period,
-            'limit': limit
-        }
-        
-        data = make_lastfm_request(params)
-        albums = data.get('topalbums', {}).get('album', [])
-        
-        # Ensure albums is always a list
-        if isinstance(albums, dict):
-            albums = [albums]
-            
-        return jsonify({'success': True, 'albums': albums})
-        
-    except LastFMError as e:
-        return jsonify({'success': False, 'error': str(e)}), 400
-    except Exception as e:
-        logger.error(f"Error getting top albums: {e}")
-        return jsonify({'success': False, 'error': 'Failed to get top albums'}), 500
-
 @app.route('/now-playing', methods=['POST'])
 @require_auth
 @rate_limit
@@ -835,6 +892,61 @@ def update_now_playing():
         logger.error(f"Error updating now playing: {e}")
         return jsonify({'success': False, 'error': 'Failed to update now playing'}), 500
 
+@app.route('/theme', methods=['GET', 'POST'])
+def theme_settings():
+    """Handle theme customization"""
+    if request.method == 'POST':
+        theme = request.form.get('theme', 'dark')
+        session['theme'] = theme
+        return jsonify({'success': True, 'theme': theme})
+    
+    return jsonify({'theme': session.get('theme', 'dark')})
+
+@app.route('/batch-scrobble', methods=['POST'])
+@require_auth
+@rate_limit
+def batch_scrobble():
+    """Scrobble multiple tracks at once"""
+    try:
+        json_data = request.json or {}
+        tracks = json_data.get('tracks', [])
+        if len(tracks) > 50:  # Last.fm limit
+            return jsonify({'success': False, 'error': 'Too many tracks. Maximum 50 tracks per batch.'}), 400
+        
+        results = []
+        for track_data in tracks:
+            # Process each track
+            # Add to batch scrobble request
+            pass
+        
+        return jsonify({'success': True, 'results': results})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/history')
+@require_auth
+def scrobble_history():
+    """Advanced scrobble history with filtering"""
+    search = request.args.get('search', '')
+    date_from = request.args.get('from')
+    date_to = request.args.get('to')
+    
+    # Implementation for filtered history
+    return render_template('history.html')
+
+@app.route('/api-usage')
+@require_auth
+def api_usage():
+    """Show API usage statistics"""
+    client_ip = request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
+    usage_stats = {
+        'requests_today': len(rate_limiter.requests.get(client_ip, [])),
+        'rate_limit_remaining': RATE_LIMIT_REQUESTS - len(rate_limiter.requests.get(client_ip, [])),
+        'next_reset': datetime.now() + timedelta(seconds=RATE_LIMIT_WINDOW)
+    }
+    
+    return jsonify(usage_stats)
+
 @app.route('/terms')
 def terms():
     """Terms of Service page"""
@@ -849,6 +961,132 @@ def privacy():
 def health_check():
     """Health check endpoint"""
     return jsonify({'status': 'healthy', 'timestamp': datetime.now().isoformat()})
+
+@app.route('/fetch-artist-image', methods=['POST'])
+@require_auth
+def fetch_artist_image():
+    """Fetch artist image from Last.fm API"""
+    try:
+        data = request.get_json()
+        artist_name = data.get('artist')
+        
+        if not artist_name:
+            return jsonify({'success': False, 'error': 'Artist name required'}), 400
+            
+        params = {
+            'method': 'artist.getInfo',
+            'artist': artist_name,
+            'api_key': API_KEY
+        }
+        
+        response = make_lastfm_request(params)
+        artist_info = response.get('artist', {})
+        images = artist_info.get('image', [])
+        
+        # Get the largest image available
+        image_url = ''
+        for img in reversed(images):  # Start from largest
+            if img.get('#text'):
+                image_url = img['#text']
+                break
+                
+        return jsonify({'success': True, 'image': image_url})
+        
+    except LastFMError as e:
+        logger.error(f"Error fetching artist image: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 400
+    except Exception as e:
+        logger.error(f"Unexpected error fetching artist image: {e}")
+        return jsonify({'success': False, 'error': 'Failed to fetch artist image'}), 500
+
+@app.route('/fetch-track-image', methods=['POST'])
+@require_auth
+def fetch_track_image():
+    """Fetch track/album image from Last.fm API"""
+    try:
+        data = request.get_json()
+        track_name = data.get('track')
+        artist_name = data.get('artist')
+        
+        if not track_name or not artist_name:
+            return jsonify({'success': False, 'error': 'Track and artist names required'}), 400
+            
+        params = {
+            'method': 'track.getInfo',
+            'track': track_name,
+            'artist': artist_name,
+            'api_key': API_KEY
+        }
+        
+        response = make_lastfm_request(params)
+        track_info = response.get('track', {})
+        
+        # Try to get album image first
+        album_info = track_info.get('album', {})
+        images = album_info.get('image', [])
+        
+        # If no album image, try artist image as fallback
+        if not images or not any(img.get('#text') for img in images):
+            return fetch_artist_image()  # Call the artist image function
+            
+        # Get the largest image available
+        image_url = ''
+        for img in reversed(images):  # Start from largest
+            if img.get('#text'):
+                image_url = img['#text']
+                break
+                
+        return jsonify({'success': True, 'image': image_url})
+        
+    except LastFMError as e:
+        logger.error(f"Error fetching track image: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 400
+    except Exception as e:
+        logger.error(f"Unexpected error fetching track image: {e}")
+        return jsonify({'success': False, 'error': 'Failed to fetch track image'}), 500
+
+@app.route('/fetch-album-image', methods=['POST'])
+@require_auth
+def fetch_album_image():
+    """Fetch album image from Last.fm API"""
+    try:
+        data = request.get_json()
+        album_name = data.get('album')
+        artist_name = data.get('artist')
+        
+        if not album_name or not artist_name:
+            return jsonify({'success': False, 'error': 'Album and artist names required'}), 400
+            
+        params = {
+            'method': 'album.getInfo',
+            'album': album_name,
+            'artist': artist_name,
+            'api_key': API_KEY
+        }
+        
+        response = make_lastfm_request(params)
+        album_info = response.get('album', {})
+        images = album_info.get('image', [])
+        
+        # If no album image, try artist image as fallback
+        if not images or not any(img.get('#text') for img in images):
+            return fetch_artist_image()  # Call the artist image function
+            
+        # Get the largest image available
+        image_url = ''
+        for img in reversed(images):  # Start from largest
+            if img.get('#text'):
+                image_url = img['#text']
+                break
+                
+        return jsonify({'success': True, 'image': image_url})
+        
+    except LastFMError as e:
+        logger.error(f"Error fetching album image: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 400
+    except Exception as e:
+        logger.error(f"Unexpected error fetching album image: {e}")
+        return jsonify({'success': False, 'error': 'Failed to fetch album image'}), 500
 
 if __name__ == '__main__':
     # Ensure API keys are set

@@ -303,6 +303,13 @@
             color: var(--accent-color);
         }
 
+        /* Fixed top list container - ensures vertical layout */
+        .top-list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
         .top-item {
             display: flex;
             align-items: center;
@@ -310,6 +317,8 @@
             padding: 12px 0;
             border-bottom: 1px solid var(--border-muted);
             transition: var(--transition);
+            width: 100%;
+            min-height: 72px;
         }
 
         .top-item:last-child {
@@ -327,8 +336,10 @@
             font-size: 1.2rem;
             font-weight: 700;
             color: var(--accent-color);
-            width: 24px;
+            width: 32px;
+            text-align: center;
             font-family: 'JetBrains Mono', monospace;
+            flex-shrink: 0;
         }
 
         .top-item-image {
@@ -337,27 +348,41 @@
             border-radius: var(--radius-small);
             object-fit: cover;
             background: var(--quaternary-color);
+            flex-shrink: 0;
         }
 
         .top-item-info {
             flex: 1;
+            min-width: 0; /* Allows text to truncate */
+            overflow: hidden;
         }
 
         .top-item-name {
             font-weight: 600;
             color: var(--text-color);
             margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.2;
         }
 
         .top-item-artist {
             color: var(--text-secondary);
             font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.2;
         }
 
         .top-item-plays {
             color: var(--text-muted);
             font-size: 0.9rem;
             font-family: 'JetBrains Mono', monospace;
+            flex-shrink: 0;
+            text-align: right;
+            min-width: 80px;
         }
 
         .loading {
@@ -416,6 +441,16 @@
 
             .time-selector {
                 justify-content: center;
+            }
+
+            .top-item-name,
+            .top-item-artist {
+                font-size: 0.9rem;
+            }
+
+            .top-item-plays {
+                font-size: 0.8rem;
+                min-width: 60px;
             }
         }
     </style>
@@ -594,7 +629,7 @@
                     document.getElementById('avg-per-day').textContent = stats.avg_per_day;
                     document.getElementById('most-active-hour').textContent = stats.most_active_hour + ':00';
                     
-                    const topGenre = stats.top_genres.length > 0 ? stats.top_genres[0][0] : 'Unknown';
+                    const topGenre = stats.top_genres && stats.top_genres.length > 0 ? stats.top_genres[0][0] : 'Unknown';
                     document.getElementById('top-genre').textContent = topGenre.charAt(0).toUpperCase() + topGenre.slice(1);
                     
                     updateCharts(stats.patterns);
@@ -612,17 +647,27 @@
                 if (data.success) {
                     const container = document.getElementById('top-artists');
                     container.innerHTML = '';
+                    container.className = 'top-list-container'; // Add proper class
                     
-                    data.artists.forEach((artist, index) => {
+                    // Auto-fetch missing artist images
+                    for (let i = 0; i < data.artists.length; i++) {
+                        const artist = data.artists[i];
+                        let imageUrl = artist.image && artist.image.length > 3 ? artist.image[3]['#text'] : '';
+                        
+                        // If no image, try to fetch one
+                        if (!imageUrl || imageUrl === '') {
+                            imageUrl = await fetchArtistImage(artist.name);
+                        }
+                        
                         const item = createTopItem(
-                            index + 1,
+                            i + 1,
                             artist.name,
-                            '',
+                            null, // No sub-artist for artists
                             artist.playcount + ' plays',
-                            artist.image && artist.image.length > 3 ? artist.image[3]['#text'] : ''
+                            imageUrl
                         );
                         container.appendChild(item);
-                    });
+                    }
                 } else {
                     document.getElementById('top-artists').innerHTML = '<div class="error">Failed to load top artists</div>';
                 }
@@ -640,17 +685,27 @@
                 if (data.success) {
                     const container = document.getElementById('top-tracks');
                     container.innerHTML = '';
+                    container.className = 'top-list-container'; // Add proper class
                     
-                    data.tracks.forEach((track, index) => {
+                    // Auto-fetch missing track images
+                    for (let i = 0; i < data.tracks.length; i++) {
+                        const track = data.tracks[i];
+                        let imageUrl = track.image && track.image.length > 3 ? track.image[3]['#text'] : '';
+                        
+                        // If no image, try to fetch album image for the track
+                        if (!imageUrl || imageUrl === '') {
+                            imageUrl = await fetchTrackImage(track.name, track.artist.name);
+                        }
+                        
                         const item = createTopItem(
-                            index + 1,
+                            i + 1,
                             track.name,
                             track.artist.name,
                             track.playcount + ' plays',
-                            track.image && track.image.length > 3 ? track.image[3]['#text'] : ''
+                            imageUrl
                         );
                         container.appendChild(item);
-                    });
+                    }
                 } else {
                     document.getElementById('top-tracks').innerHTML = '<div class="error">Failed to load top tracks</div>';
                 }
@@ -668,17 +723,27 @@
                 if (data.success) {
                     const container = document.getElementById('top-albums');
                     container.innerHTML = '';
+                    container.className = 'top-list-container'; // Add proper class
                     
-                    data.albums.forEach((album, index) => {
+                    // Auto-fetch missing album images
+                    for (let i = 0; i < data.albums.length; i++) {
+                        const album = data.albums[i];
+                        let imageUrl = album.image && album.image.length > 3 ? album.image[3]['#text'] : '';
+                        
+                        // If no image, try to fetch one
+                        if (!imageUrl || imageUrl === '') {
+                            imageUrl = await fetchAlbumImage(album.name, album.artist.name);
+                        }
+                        
                         const item = createTopItem(
-                            index + 1,
+                            i + 1,
                             album.name,
                             album.artist.name,
                             album.playcount + ' plays',
-                            album.image && album.image.length > 3 ? album.image[3]['#text'] : ''
+                            imageUrl
                         );
                         container.appendChild(item);
-                    });
+                    }
                 } else {
                     document.getElementById('top-albums').innerHTML = '<div class="error">Failed to load top albums</div>';
                 }
@@ -688,19 +753,76 @@
             }
         }
 
+        // Auto-fetch image functions
+        async function fetchArtistImage(artistName) {
+            try {
+                const response = await fetch('/fetch-artist-image', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ artist: artistName })
+                });
+                const data = await response.json();
+                return data.success ? data.image : '';
+            } catch (error) {
+                console.error('Error fetching artist image:', error);
+                return '';
+            }
+        }
+
+        async function fetchTrackImage(trackName, artistName) {
+            try {
+                const response = await fetch('/fetch-track-image', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ track: trackName, artist: artistName })
+                });
+                const data = await response.json();
+                return data.success ? data.image : '';
+            } catch (error) {
+                console.error('Error fetching track image:', error);
+                return '';
+            }
+        }
+
+        async function fetchAlbumImage(albumName, artistName) {
+            try {
+                const response = await fetch('/fetch-album-image', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ album: albumName, artist: artistName })
+                });
+                const data = await response.json();
+                return data.success ? data.image : '';
+            } catch (error) {
+                console.error('Error fetching album image:', error);
+                return '';
+            }
+        }
+
         function createTopItem(rank, name, artist, plays, imageUrl) {
             const item = document.createElement('div');
             item.className = 'top-item';
             
+            // Escape HTML to prevent XSS
+            const escapedName = name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const escapedArtist = artist ? artist.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
+            const escapedPlays = plays.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            
             item.innerHTML = `
                 <div class="top-item-rank">${rank}</div>
-                <img class="top-item-image" src="${imageUrl || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCA0OCA0OCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9IiMyMTI2MmQiIHJ4PSIxMiIvPjwvc3ZnPg=='}" alt="${name}" 
+                <img class="top-item-image" src="${imageUrl || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCA0OCA0OCIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9IiMyMTI2MmQiIHJ4PSIxMiIvPjwvc3ZnPg=='}" alt="${escapedName}" 
                      onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCA0OCA0OCIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9IiMyMTI2MmQiIHJ4PSIxMiIvPjwvc3ZnPg=='">
                 <div class="top-item-info">
-                    <div class="top-item-name">${name}</div>
-                    ${artist ? `<div class="top-item-artist">${artist}</div>` : ''}
+                    <div class="top-item-name" title="${escapedName}">${escapedName}</div>
+                    ${escapedArtist ? `<div class="top-item-artist" title="${escapedArtist}">${escapedArtist}</div>` : ''}
                 </div>
-                <div class="top-item-plays">${plays}</div>
+                <div class="top-item-plays">${escapedPlays}</div>
             `;
             
             return item;
