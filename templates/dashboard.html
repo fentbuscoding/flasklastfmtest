@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Last.fm Scrobbler</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #e63946;
+            --primary-hover: #d62828;
+            --primary-dark: #a4161a;
+            --secondary-color: #0d1117;
+            --tertiary-color: #161b22;
+            --quaternary-color: #21262d;
+            --accent-color: #f72585;
+            --accent-hover: #d00366;
+            --accent-secondary: #7209b7;
+            --text-color: #f0f6fc;
+            --text-secondary: #8b949e;
+            --text-muted: #6e7681;
+            --text-dim: #484f58;
+            --background: #010409;
+            --background-secondary: #0d1117;
+            --card-background: #161b22;
+            --card-hover: #21262d;
+            --border-color: #30363d;
+            --border-muted: #21262d;
+            --success-color: #238636;
+            --error-color: #da3633;
+            --warning-color: #d29922;
+            
+            --shadow-dark: 0 16px 32px rgba(0, 0, 0, 0.8);
+            --shadow-darker: 0 20px 40px rgba(0, 0, 0, 0.9);
+            --shadow-intense: 0 8px 32px rgba(231, 57, 70, 0.4);
+            --shadow-accent: 0 8px 32px rgba(247, 37, 133, 0.3);
+            --glow-primary: 0 0 30px rgba(231, 57, 70, 0.6);
+            --glow-accent: 0 0 30px rgba(247, 37, 133, 0.5);
+            --glow-subtle: 0 0 20px rgba(247, 37, 133, 0.2);
+            
+            --radius: 16px;
+            --radius-small: 12px;
+            --radius-large: 20px;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--text-color);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(231, 57, 70, 0.08) 0%, transparent 60%),
+                radial-gradient(circle at 80% 70%, rgba(247, 37, 133, 0.06) 0%, transparent 60%),
+                radial-gradient(circle at 40% 80%, rgba(114, 9, 183, 0.04) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+            animation: darkFloat 25s ease-in-out infinite;
+        }
+
+        @keyframes darkFloat {
+            0%, 100% { 
+                transform: translateY(0px) scale(1) rotate(0deg);
+                opacity: 0.8;
+            }
+            33% { 
+                transform: translateY(-30px) scale(1.05) rotate(1deg);
+                opacity: 0.9;
+            }
+            66% { 
+                transform: translateY(-15px) scale(0.95) rotate(-0.5deg);
+                opacity: 0.7;
+            }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .back-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 24px;
+            border-radius: 50px;
+            background: var(--quaternary-color);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .back-link:hover {
+            background: var(--card-hover);
+            color: var(--primary-color);
+            transform: translateX(-8px);
+            text-decoration: none;
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-intense);
+        }
+
+        .time-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .time-btn {
+            padding: 12px 20px;
+            background: var(--quaternary-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-small);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .time-btn:hover,
+        .time-btn.active {
+            background: var(--primary-color);
+            color: var(--text-color);
+            border-color: var(--primary-color);
+            box-shadow: var(--glow-primary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 24px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        }
+
+        .stat-card:hover {
+            background: var(--card-hover);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-dark);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--quaternary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            color: var(--accent-color);
+            font-size: 1.5rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-color);
+            margin-bottom: 8px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .chart-card {
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 24px;
+            transition: var(--transition);
+        }
+
+        .chart-card:hover {
+            background: var(--card-hover);
+            box-shadow: var(--shadow-dark);
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chart-title i {
+            color: var(--accent-color);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .top-lists {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+        }
+
+        .top-list-card {
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 24px;
+            transition: var(--transition);
+        }
+
+        .top-list-card:hover {
+            background: var(--card-hover);
+            box-shadow: var(--shadow-dark);
+        }
+
+        .top-list-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .top-list-title i {
+            color: var(--accent-color);
+        }
+
+        .top-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-muted);
+            transition: var(--transition);
+        }
+
+        .top-item:last-child {
+            border-bottom: none;
+        }
+
+        .top-item:hover {
+            background: var(--quaternary-color);
+            border-radius: var(--radius-small);
+            padding: 12px 16px;
+            margin: 0 -16px;
+        }
+
+        .top-item-rank {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            width: 24px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .top-item-image {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-small);
+            object-fit: cover;
+            background: var(--quaternary-color);
+        }
+
+        .top-item-info {
+            flex: 1;
+        }
+
+        .top-item-name {
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 4px;
+        }
+
+        .top-item-artist {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .top-item-plays {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        .loading i {
+            margin-right: 12px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            padding: 20px;
+            background: rgba(218, 54, 51, 0.1);
+            border: 1px solid var(--error-color);
+            border-radius: var(--radius-small);
+            color: var(--error-color);
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+
+            .top-lists {
+                grid-template-columns: 1fr;
+            }
+
+            .time-selector {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-chart-line"></i> Analytics Dashboard</h1>
+            <a href="{{ url_for('home') }}" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to Scrobbler
+            </a>
+        </div>
+
+        <div class="time-selector">
+            <button class="time-btn active" data-period="7day">Last 7 Days</button>
+            <button class="time-btn" data-period="1month">Last Month</button>
+            <button class="time-btn" data-period="3month">Last 3 Months</button>
+            <button class="time-btn" data-period="6month">Last 6 Months</button>
+            <button class="time-btn" data-period="12month">Last Year</button>
+            <button class="time-btn" data-period="overall">All Time</button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-music"></i>
+                </div>
+                <div class="stat-value" id="total-scrobbles">-</div>
+                <div class="stat-label">Total Scrobbles</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-user-friends"></i>
+                </div>
+                <div class="stat-value" id="unique-artists">-</div>
+                <div class="stat-label">Unique Artists</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-compact-disc"></i>
+                </div>
+                <div class="stat-value" id="unique-albums">-</div>
+                <div class="stat-label">Unique Albums</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-day"></i>
+                </div>
+                <div class="stat-value" id="avg-per-day">-</div>
+                <div class="stat-label">Average Per Day</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-value" id="most-active-hour">-</div>
+                <div class="stat-label">Most Active Hour</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-fire"></i>
+                </div>
+                <div class="stat-value" id="top-genre">-</div>
+                <div class="stat-label">Top Genre</div>
+            </div>
+        </div>
+
+        <div class="charts-section">
+            <div class="chart-card">
+                <div class="chart-title">
+                    <i class="fas fa-chart-bar"></i>
+                    Listening Patterns by Hour
+                </div>
+                <div class="chart-container">
+                    <canvas id="hourlyChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-title">
+                    <i class="fas fa-chart-pie"></i>
+                    Listening Patterns by Day
+                </div>
+                <div class="chart-container">
+                    <canvas id="dailyChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="top-lists">
+            <div class="top-list-card">
+                <div class="top-list-title">
+                    <i class="fas fa-trophy"></i>
+                    Top Artists
+                </div>
+                <div id="top-artists" class="loading">
+                    <i class="fas fa-spinner"></i>
+                    Loading top artists...
+                </div>
+            </div>
+
+            <div class="top-list-card">
+                <div class="top-list-title">
+                    <i class="fas fa-headphones"></i>
+                    Top Tracks
+                </div>
+                <div id="top-tracks" class="loading">
+                    <i class="fas fa-spinner"></i>
+                    Loading top tracks...
+                </div>
+            </div>
+
+            <div class="top-list-card">
+                <div class="top-list-title">
+                    <i class="fas fa-record-vinyl"></i>
+                    Top Albums
+                </div>
+                <div id="top-albums" class="loading">
+                    <i class="fas fa-spinner"></i>
+                    Loading top albums...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPeriod = '7day';
+        let hourlyChart, dailyChart;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboard();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            document.querySelectorAll('.time-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentPeriod = this.dataset.period;
+                    loadDashboard();
+                });
+            });
+        }
+
+        async function loadDashboard() {
+            try {
+                await Promise.all([
+                    loadStats(),
+                    loadTopArtists(),
+                    loadTopTracks(),
+                    loadTopAlbums()
+                ]);
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const response = await fetch('/stats');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const stats = data.stats;
+                    
+                    document.getElementById('total-scrobbles').textContent = stats.total_scrobbles.toLocaleString();
+                    document.getElementById('unique-artists').textContent = stats.unique_artists.toLocaleString();
+                    document.getElementById('unique-albums').textContent = stats.unique_albums.toLocaleString();
+                    document.getElementById('avg-per-day').textContent = stats.avg_per_day;
+                    document.getElementById('most-active-hour').textContent = stats.most_active_hour + ':00';
+                    
+                    const topGenre = stats.top_genres.length > 0 ? stats.top_genres[0][0] : 'Unknown';
+                    document.getElementById('top-genre').textContent = topGenre.charAt(0).toUpperCase() + topGenre.slice(1);
+                    
+                    updateCharts(stats.patterns);
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        async function loadTopArtists() {
+            try {
+                const response = await fetch(`/top-artists?period=${currentPeriod}&limit=10`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const container = document.getElementById('top-artists');
+                    container.innerHTML = '';
+                    
+                    data.artists.forEach((artist, index) => {
+                        const item = createTopItem(
+                            index + 1,
+                            artist.name,
+                            '',
+                            artist.playcount + ' plays',
+                            artist.image && artist.image.length > 3 ? artist.image[3]['#text'] : ''
+                        );
+                        container.appendChild(item);
+                    });
+                } else {
+                    document.getElementById('top-artists').innerHTML = '<div class="error">Failed to load top artists</div>';
+                }
+            } catch (error) {
+                console.error('Error loading top artists:', error);
+                document.getElementById('top-artists').innerHTML = '<div class="error">Failed to load top artists</div>';
+            }
+        }
+
+        async function loadTopTracks() {
+            try {
+                const response = await fetch(`/top-tracks?period=${currentPeriod}&limit=10`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const container = document.getElementById('top-tracks');
+                    container.innerHTML = '';
+                    
+                    data.tracks.forEach((track, index) => {
+                        const item = createTopItem(
+                            index + 1,
+                            track.name,
+                            track.artist.name,
+                            track.playcount + ' plays',
+                            track.image && track.image.length > 3 ? track.image[3]['#text'] : ''
+                        );
+                        container.appendChild(item);
+                    });
+                } else {
+                    document.getElementById('top-tracks').innerHTML = '<div class="error">Failed to load top tracks</div>';
+                }
+            } catch (error) {
+                console.error('Error loading top tracks:', error);
+                document.getElementById('top-tracks').innerHTML = '<div class="error">Failed to load top tracks</div>';
+            }
+        }
+
+        async function loadTopAlbums() {
+            try {
+                const response = await fetch(`/top-albums?period=${currentPeriod}&limit=10`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const container = document.getElementById('top-albums');
+                    container.innerHTML = '';
+                    
+                    data.albums.forEach((album, index) => {
+                        const item = createTopItem(
+                            index + 1,
+                            album.name,
+                            album.artist.name,
+                            album.playcount + ' plays',
+                            album.image && album.image.length > 3 ? album.image[3]['#text'] : ''
+                        );
+                        container.appendChild(item);
+                    });
+                } else {
+                    document.getElementById('top-albums').innerHTML = '<div class="error">Failed to load top albums</div>';
+                }
+            } catch (error) {
+                console.error('Error loading top albums:', error);
+                document.getElementById('top-albums').innerHTML = '<div class="error">Failed to load top albums</div>';
+            }
+        }
+
+        function createTopItem(rank, name, artist, plays, imageUrl) {
+            const item = document.createElement('div');
+            item.className = 'top-item';
+            
+            item.innerHTML = `
+                <div class="top-item-rank">${rank}</div>
+                <img class="top-item-image" src="${imageUrl || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCA0OCA0OCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9IiMyMTI2MmQiIHJ4PSIxMiIvPjwvc3ZnPg=='}" alt="${name}" 
+                     onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCA0OCA0OCIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9IiMyMTI2MmQiIHJ4PSIxMiIvPjwvc3ZnPg=='">
+                <div class="top-item-info">
+                    <div class="top-item-name">${name}</div>
+                    ${artist ? `<div class="top-item-artist">${artist}</div>` : ''}
+                </div>
+                <div class="top-item-plays">${plays}</div>
+            `;
+            
+            return item;
+        }
+
+        function updateCharts(patterns) {
+            // Hourly chart
+            const hourlyCtx = document.getElementById('hourlyChart').getContext('2d');
+            
+            if (hourlyChart) {
+                hourlyChart.destroy();
+            }
+            
+            const hourlyData = Object.entries(patterns.hourly).map(([hour, count]) => ({
+                x: parseInt(hour),
+                y: count
+            }));
+            
+            hourlyChart = new Chart(hourlyCtx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: 'Scrobbles',
+                        data: hourlyData,
+                        borderColor: '#f72585',
+                        backgroundColor: 'rgba(247, 37, 133, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            min: 0,
+                            max: 23,
+                            ticks: {
+                                stepSize: 2,
+                                callback: function(value) {
+                                    return value + ':00';
+                                },
+                                color: '#6e7681'
+                            },
+                            grid: {
+                                color: '#30363d'
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#6e7681'
+                            },
+                            grid: {
+                                color: '#30363d'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Daily chart
+            const dailyCtx = document.getElementById('dailyChart').getContext('2d');
+            
+            if (dailyChart) {
+                dailyChart.destroy();
+            }
+            
+            const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const dailyData = Object.entries(patterns.daily).map(([day, count]) => count);
+            
+            dailyChart = new Chart(dailyCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: dayNames,
+                    datasets: [{
+                        data: dailyData,
+                        backgroundColor: [
+                            '#e63946',
+                            '#f72585',
+                            '#7209b7',
+                            '#d29922',
+                            '#238636',
+                            '#da3633',
+                            '#6e7681'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#161b22'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#6e7681',
+                                padding: 20
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

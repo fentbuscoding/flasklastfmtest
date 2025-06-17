@@ -1327,6 +1327,14 @@
                             </div>
                         </div>
                         <div class="user-actions">
+                            <a href="{{ url_for('dashboard') }}" class="btn accent btn-small" title="Analytics Dashboard">
+                                <i class="fas fa-chart-line"></i>
+                            </a>
+                            {% if user_name and user_name.lower() in ['schoolbusgaming'] %}
+                                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-small" title="Admin Dashboard" style="background: linear-gradient(135deg, #ff6b35, #ff5722);">
+                                    <i class="fas fa-shield-alt"></i>
+                                </a>
+                            {% endif %}
                             {% if user_info and user_info.url %}
                                 <a href="{{ user_info.url }}" target="_blank" class="btn secondary btn-small" title="View Last.fm Profile">
                                     <i class="fab fa-lastfm"></i>

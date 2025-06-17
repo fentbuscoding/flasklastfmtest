@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Last.fm Scrobbler</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0a0a0a;
+            --secondary-color: #1a1a1a;
+            --tertiary-color: #2a2a2a;
+            --quaternary-color: #1e1e1e;
+            --accent-color: #ff4081;
+            --admin-color: #e91e63;
+            --admin-hover: #c2185b;
+            --success-color: #4caf50;
+            --error-color: #da3633;
+            --warning-color: #ff9800;
+            --text-color: #ffffff;
+            --text-secondary: #cccccc;
+            --text-muted: #999999;
+            --border-color: #3a3a3a;
+            --border-muted: #2a2a2a;
+            --card-background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+            --card-hover: linear-gradient(145deg, #252525, #353535);
+            --shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            --shadow-dark: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --shadow-admin: 0 4px 20px rgba(233, 30, 99, 0.3);
+            --glow-admin: 0 0 20px rgba(233, 30, 99, 0.5);
+            --radius: 12px;
+            --radius-small: 8px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #2a2a2a 100%);
+            min-height: 100vh;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--admin-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header i {
+            font-size: 2.5rem;
+            color: var(--admin-color);
+            text-shadow: var(--glow-admin);
+        }
+
+        .admin-badge {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, var(--admin-color), var(--admin-hover));
+            color: white;
+            border-radius: var(--radius-small);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: var(--shadow-admin);
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: var(--quaternary-color);
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: var(--radius-small);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            background: var(--card-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+            border-color: var(--admin-color);
+        }
+
+        .admin-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .admin-stat-card {
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 24px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .admin-stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--admin-color), var(--accent-color));
+        }
+
+        .admin-stat-card:hover {
+            background: var(--card-hover);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-dark);
+            border-color: var(--admin-color);
+        }
+
+        .admin-stat-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--admin-color), var(--admin-hover));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            color: white;
+            font-size: 1.8rem;
+            box-shadow: var(--glow-admin);
+        }
+
+        .admin-stat-value {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--text-color);
+            margin-bottom: 8px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .admin-stat-label {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .system-info {
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .system-info h3 {
+            color: var(--admin-color);
+            margin-bottom: 16px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .info-item {
+            padding: 12px;
+            background: var(--quaternary-color);
+            border-radius: var(--radius-small);
+            border-left: 3px solid var(--admin-color);
+        }
+
+        .info-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            color: var(--text-color);
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .admin-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .control-card {
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 24px;
+            transition: var(--transition);
+        }
+
+        .control-card:hover {
+            background: var(--card-hover);
+            box-shadow: var(--shadow-dark);
+        }
+
+        .control-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .control-title i {
+            color: var(--admin-color);
+        }
+
+        .admin-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, var(--admin-color), var(--admin-hover));
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: var(--radius-small);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: var(--shadow-admin);
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .admin-btn:hover {
+            background: linear-gradient(135deg, var(--admin-hover), var(--admin-color));
+            transform: translateY(-2px);
+            box-shadow: var(--glow-admin);
+        }
+
+        .admin-btn.danger {
+            background: linear-gradient(135deg, var(--error-color), #c62828);
+        }
+
+        .admin-btn.danger:hover {
+            background: linear-gradient(135deg, #c62828, var(--error-color));
+        }
+
+        .admin-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        .loading i {
+            margin-right: 12px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            padding: 20px;
+            background: rgba(218, 54, 51, 0.1);
+            border: 1px solid var(--error-color);
+            border-radius: var(--radius-small);
+            color: var(--error-color);
+            text-align: center;
+        }
+
+        .success {
+            padding: 20px;
+            background: rgba(35, 134, 54, 0.1);
+            border: 1px solid var(--success-color);
+            border-radius: var(--radius-small);
+            color: var(--success-color);
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .rate-limit-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        .rate-limit-table th,
+        .rate-limit-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-muted);
+        }
+
+        .rate-limit-table th {
+            background: var(--quaternary-color);
+            color: var(--text-color);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+
+        .rate-limit-table td {
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .rate-limit-table tr:hover {
+            background: var(--quaternary-color);
+        }
+
+        .status-limited {
+            color: var(--error-color);
+            font-weight: 600;
+        }
+
+        .status-ok {
+            color: var(--success-color);
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .header h1 {
+                font-size: 2.2rem;
+            }
+
+            .admin-stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-controls {
+                grid-template-columns: 1fr;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <h1><i class="fas fa-shield-alt"></i> Admin Dashboard</h1>
+                <div class="admin-badge">Administrator</div>
+            </div>
+            <a href="{{ url_for('home') }}" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to Scrobbler
+            </a>
+        </div>
+
+        <div class="admin-stats-grid">
+            <div class="admin-stat-card">
+                <div class="admin-stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="admin-stat-value" id="active-sessions">-</div>
+                <div class="admin-stat-label">Active Sessions</div>
+            </div>
+
+            <div class="admin-stat-card">
+                <div class="admin-stat-icon">
+                    <i class="fas fa-server"></i>
+                </div>
+                <div class="admin-stat-value" id="total-requests">-</div>
+                <div class="admin-stat-label">Total Requests Today</div>
+            </div>
+
+            <div class="admin-stat-card">
+                <div class="admin-stat-icon">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+                <div class="admin-stat-value" id="active-ips">-</div>
+                <div class="admin-stat-label">Active IP Addresses</div>
+            </div>
+
+            <div class="admin-stat-card">
+                <div class="admin-stat-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div class="admin-stat-value" id="storage-used">-</div>
+                <div class="admin-stat-label">Total Users</div>
+            </div>
+        </div>
+
+        <div class="system-info">
+            <h3><i class="fas fa-info-circle"></i> System Configuration</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Rate Limit</div>
+                    <div class="info-value" id="rate-limit-requests">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Rate Window</div>
+                    <div class="info-value" id="rate-limit-window">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Admin User</div>
+                    <div class="info-value">{{ user_name or 'Unknown' }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Server Time</div>
+                    <div class="info-value" id="server-time">-</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-controls">
+            <div class="control-card">
+                <div class="control-title">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Rate Limiting Control
+                </div>
+                <div id="rate-limit-message"></div>
+                <button class="admin-btn danger" onclick="clearAllRateLimits()">
+                    <i class="fas fa-trash"></i>
+                    Clear All Rate Limits
+                </button>
+                <button class="admin-btn" onclick="refreshRateLimits()">
+                    <i class="fas fa-sync"></i>
+                    Refresh Data
+                </button>
+            </div>
+
+            <div class="control-card">
+                <div class="control-title">
+                    <i class="fas fa-chart-bar"></i>
+                    System Monitoring
+                </div>
+                <button class="admin-btn" onclick="refreshSystemStats()">
+                    <i class="fas fa-sync"></i>
+                    Refresh Stats
+                </button>
+                <button class="admin-btn" onclick="exportSystemData()">
+                    <i class="fas fa-download"></i>
+                    Export Data
+                </button>
+            </div>
+        </div>
+
+        <div class="control-card">
+            <div class="control-title">
+                <i class="fas fa-list"></i>
+                Rate Limit Status
+            </div>
+            <div id="rate-limit-loading" class="loading">
+                <i class="fas fa-spinner"></i>
+                Loading rate limit data...
+            </div>
+            <div id="rate-limit-container" style="display: none;">
+                <table class="rate-limit-table">
+                    <thead>
+                        <tr>
+                            <th>IP Address</th>
+                            <th>Status</th>
+                            <th>Requests</th>
+                            <th>Last Request</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rate-limit-tbody">
+                    </tbody>
+                </table>
+                <div id="no-rate-limits" style="display: none; padding: 20px; text-align: center; color: var(--text-muted);">
+                    No active rate limits
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSystemStats();
+            loadRateLimitStats();
+            updateServerTime();
+            setInterval(updateServerTime, 1000);
+            // Auto-refresh data every 30 seconds
+            setInterval(() => {
+                loadSystemStats();
+                loadRateLimitStats();
+            }, 30000);
+        });
+
+        function updateServerTime() {
+            const now = new Date();
+            document.getElementById('server-time').textContent = now.toLocaleTimeString();
+        }
+
+        async function loadSystemStats() {
+            try {
+                const response = await fetch('/admin/system-stats');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                if (data.success) {
+                    const stats = data.stats;
+                    document.getElementById('active-sessions').textContent = stats.active_sessions.toLocaleString();
+                    document.getElementById('total-requests').textContent = stats.total_requests_today.toLocaleString();
+                    document.getElementById('active-ips').textContent = stats.active_ips.toLocaleString();
+                    document.getElementById('storage-used').textContent = stats.total_users.toLocaleString();
+                    
+                    // Update rate limit config
+                    if (stats.rate_limit_config) {
+                        document.getElementById('rate-limit-requests').textContent = 
+                            `${stats.rate_limit_config.requests_per_window} requests`;
+                        document.getElementById('rate-limit-window').textContent = 
+                            `${stats.rate_limit_config.window_seconds} seconds`;
+                    }
+                } else {
+                    console.error('Failed to load system stats:', data.error);
+                    showMessage('Failed to load system stats: ' + data.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error loading system stats:', error);
+                // Set default values on error
+                document.getElementById('active-sessions').textContent = 'Error';
+                document.getElementById('total-requests').textContent = 'Error';
+                document.getElementById('active-ips').textContent = 'Error';
+                document.getElementById('storage-used').textContent = 'Error';
+                showMessage('Error loading system stats: ' + error.message, 'error');
+            }
+        }
+
+        async function loadRateLimitStats() {
+            const loadingDiv = document.getElementById('rate-limit-loading');
+            const containerDiv = document.getElementById('rate-limit-container');
+            const tbody = document.getElementById('rate-limit-tbody');
+            const noLimitsDiv = document.getElementById('no-rate-limits');
+            
+            loadingDiv.style.display = 'flex';
+            containerDiv.style.display = 'none';
+            
+            try {
+                const response = await fetch('/admin/rate-limit-stats');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                if (data.success) {
+                    const rateLimits = data.rate_limits;
+                    tbody.innerHTML = '';
+                    
+                    if (Object.keys(rateLimits).length === 0) {
+                        noLimitsDiv.style.display = 'block';
+                        tbody.style.display = 'none';
+                    } else {
+                        noLimitsDiv.style.display = 'none';
+                        tbody.style.display = '';
+                        
+                        Object.entries(rateLimits).forEach(([ip, stats]) => {
+                            const row = tbody.insertRow();
+                            row.innerHTML = `
+                                <td>${ip}</td>
+                                <td class="status-${stats.status === 'limited' ? 'limited' : 'ok'}">
+                                    ${stats.status === 'limited' ? 'Rate Limited' : 'OK'}
+                                </td>
+                                <td>${stats.request_count}/5</td>
+                                <td>${stats.last_request ? new Date(stats.last_request).toLocaleString() : 'Never'}</td>
+                            `;
+                        });
+                    }
+                } else {
+                    console.error('Failed to load rate limit stats:', data.error);
+                    showMessage('Failed to load rate limit stats: ' + data.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error loading rate limit stats:', error);
+                showMessage('Error loading rate limit stats: ' + error.message, 'error');
+            } finally {
+                loadingDiv.style.display = 'none';
+                containerDiv.style.display = 'block';
+            }
+        }
+
+        async function clearAllRateLimits() {
+            if (!confirm('Are you sure you want to clear all rate limits? This will allow all IPs to make requests again.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/admin/clear-rate-limits', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                if (data.success) {
+                    showMessage('All rate limits cleared successfully!', 'success');
+                    loadSystemStats();
+                    loadRateLimitStats();
+                } else {
+                    showMessage('Failed to clear rate limits: ' + data.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error clearing rate limits:', error);
+                showMessage('Error clearing rate limits: ' + error.message, 'error');
+            }
+        }
+
+        function refreshRateLimits() {
+            showMessage('Refreshing rate limit data...', 'success');
+            loadRateLimitStats();
+        }
+
+        function refreshSystemStats() {
+            showMessage('Refreshing system stats...', 'success');
+            loadSystemStats();
+        }
+
+        async function exportSystemData() {
+            try {
+                // Get current data from the dashboard
+                const systemResponse = await fetch('/admin/system-stats');
+                const rateLimitResponse = await fetch('/admin/rate-limit-stats');
+                
+                if (!systemResponse.ok || !rateLimitResponse.ok) {
+                    throw new Error('Failed to fetch data for export');
+                }
+                
+                const systemData = await systemResponse.json();
+                const rateLimitData = await rateLimitResponse.json();
+                
+                const exportData = {
+                    timestamp: new Date().toISOString(),
+                    system_stats: systemData.success ? systemData.stats : null,
+                    rate_limit_stats: rateLimitData.success ? rateLimitData.rate_limits : null,
+                    exported_by: '{{ user_name or "Unknown" }}'
+                };
+
+                const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `admin_data_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                showMessage('System data exported successfully', 'success');
+            } catch (error) {
+                console.error('Error exporting system data:', error);
+                showMessage('Error exporting system data: ' + error.message, 'error');
+            }
+        }
+
+        function showMessage(message, type = 'success') {
+            const messageDiv = document.getElementById('rate-limit-message');
+            messageDiv.innerHTML = `<div class="${type}">${message}</div>`;
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
